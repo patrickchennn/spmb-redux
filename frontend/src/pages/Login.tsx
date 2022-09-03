@@ -17,7 +17,6 @@ const Login = () => {
 
   useEffect(() => {
     // console.log("USE EFFECT!");
-    // console.log(isSuccess,isError,message,user);
 
     // if error=true
     if(isError) toast.error(message);
@@ -27,7 +26,7 @@ const Login = () => {
 
     dispatch(reset())
 
-  }, [isLoading,isSuccess,isError,message,user,navigate,dispatch]);
+  }, [isLoading,isSuccess,isError,message,user]);
   
 
   function handleSubmit(e: React.SyntheticEvent){

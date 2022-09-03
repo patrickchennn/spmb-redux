@@ -20,12 +20,12 @@ const protect = asyncHandler(async (req,res,next) => {
       req.user = await userModel.findById(decoded.id).select("-password");
 
       // console.log(req.headers);
-      // console.log(req.user);
+      console.log("req.user: ",req.user);
       next();
     } catch (error) {
       console.error(error);
       res.status(401);
-      throw new Error("Not authorized");
+      throw new Error(error);
     }
   }
   // console.log("skip next()?");

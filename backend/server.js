@@ -12,7 +12,7 @@ const port = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use("/api/biodata",require("./routes/biodataRoutes.js"));
+app.use("/api/student-data",require("./routes/studentDataRoutes.js"));
 app.use("/api/user",require("./routes/userRoutes.js"));
 
 app.use(errorHandler);

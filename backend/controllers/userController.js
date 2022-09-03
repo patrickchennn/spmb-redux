@@ -5,7 +5,7 @@ const userModel = require("../model/userModel.js");
 
 /**
  * @desc Register user
- * @route POST /api/user
+ * @route POST /api/user/register
  * @access Public
  */
 const registerUser = asyncHandler(async (req,res) => {
@@ -29,7 +29,6 @@ const registerUser = asyncHandler(async (req,res) => {
   const hashedPw = await bcrypt.hash(password,salt);
 
   const user = await userModel.create({name,email,password:hashedPw});
-
   if(!user){
     res.status(400);
     throw new Error("invalid user data");
@@ -102,15 +101,8 @@ const generateToken = (id) => jwt.sign(
   {id},
   process.env.JWT_SECRET,
   {
-    expiresIn:'1d',
+    expiresIn:'30min',
   }
 );
 
-
 module.exports = {registerUser,loginUser,getMe};
-
-/*
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZjBiNjFiMDEzMThlOTY3YmY5ZjllZCIsImlhdCI6MTY2MDAwODc2MCwiZXhwIjoxNjYwNDQwNzYwfQ.q_6RtrWcI2dTNevr9fcaCeyJDgyQGjxdUXZUerB2Kbc
-
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZjBiNjFiMDEzMThlOTY3YmY5ZjllZCIsImlhdCI6MTY2MDAwODgwNiwiZXhwIjoxNjYwNDQwODA2fQ.ZpsYjdUkEOMIuVJ2UuV-arUUwVJMHbwDq-m6ygqtrbA
-*/
