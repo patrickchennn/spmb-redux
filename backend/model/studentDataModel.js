@@ -8,42 +8,57 @@ const studentDataSchema = new mongoose.Schema(
       ref: 'User',
     },
     dataDiri: {
-      kewarnegaraan: {type:String,default:""},
-      namaLengkap: {type:String,default:""},
-      jenisKelamin: {type:String,default:""},
-      tanggalLahir: {type: Date, default: new Date().toLocaleDateString('en-CA')},
-      tempatKotaLahir: {type:String,default:""},
-      alamatEmail: {type:String,default:""},
+      namaLengkap: {type:String, default:""},
+      jenisKelamin: {type:String, default:""},
+      kewarnegaraan: {type:String, default:""},
+      tempatKotaLahir: {type:String, default:""},
+      tanggalLahir: {type:String, default:new Date().toLocaleDateString('en-CA')},
+      alamatEmail: {type:String, default:""},
       noHp: {type:String,default:""},
     },
     berkasAdministrasi: {
       fotoCopyKartuKeluarga:{
-        namaFoto: String,
-        data: Buffer,
-        mimeType: String,
+        type:{
+          namaFoto: String,
+          data: Buffer,
+          mimeType: String,
+        },
+        default:null,
       },
       fotoCopyIjazah:{
-        namaFoto: String,
-        data: Buffer,
-        mimeType: String,
+        type:{
+          namaFoto: String,
+          data: Buffer,
+          mimeType: String,
+        },
+        default:null,
       },
       fotoCopyPrestasi:{
-        namaFoto: String,
-        data: Buffer,
-        mimeType: String,
+        type:{
+          namaFoto: String,
+          data: Buffer,
+          mimeType: String,
+        },
+        default:null,
       },
       pasFoto:{
-        namaFoto: String,
-        data: Buffer,
-        mimeType: String,
+        type:{
+          namaFoto: String,
+          data: Buffer,
+          mimeType: String,
+        },
+        default:null,
       },
     },
     infoSeleksi:{
-      tanggalSeleksi:{type: Date,default: new Date().toLocaleDateString('en-CA')},
+      tanggalSeleksi:{type: String,default: new Date().toLocaleDateString('en-CA')},
       buktiPembayaranSeleksi:{
-        namaFoto: String,
-        data: Buffer,
-        mimeType: String,
+        type:{
+          namaFoto: String,
+          data: Buffer,
+          mimeType: String,
+        },
+        default:null,
       },
       statusPembarayanSeleksi:Boolean,
       statusPenerimaanSeleksi:Boolean,
@@ -51,13 +66,16 @@ const studentDataSchema = new mongoose.Schema(
     },
     daftarUlang: {
       buktiPembayaranDaftarUlang:{
-        namaFoto: String,
-        data: Buffer,
-        mimeType: String,
+        type:{
+          namaFoto: String,
+          data: Buffer,
+          mimeType: String,
+        },
+        default:null,
       },
       statusPembayaranDaftarUlang:{type: String, default:""}
     },
-    tanggalRegistrasi:{type: Date,default: new Date().toLocaleString()},
+    tanggalRegistrasi:{type: String, default: new Date().toLocaleString()},
   },
   { 
     timestamps: true,

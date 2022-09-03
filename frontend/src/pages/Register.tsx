@@ -4,8 +4,9 @@ import RegisterLoginNav from '../components/RegisterLoginNav';
 import ArtPaintLg from '../assets/art-paint-lg.jpg';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import {register,reset} from "../features/auth/authSlice";
+import {register,reset as resetAuthState} from "../features/auth/authSlice";
 import { useAppDispatch,useAppSelector } from '../app/hooks';
+import {createStudentDataDefault} from "../features/student-data/studentDataSlice"
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -40,22 +41,23 @@ const Register = () => {
     
     if(isSuccess || user) navigate('/spmb-form')
 
-    dispatch(reset())
-  }, [user,isLoading,isError,isSuccess,message,navigate,dispatch])
+    dispatch(resetAuthState())
+  }, [user,isLoading,isError,isSuccess,message])
   
 
 
 
-  function handleSubmit(e: React.SyntheticEvent){
+  async function handleSubmit(e: React.SyntheticEvent){
     e.preventDefault();
     // if the first password and the confirmation password is equal
-    if(userData.password===userData.confirmPassword){
-      console.log("user data to be submitted:\n", userData);
-      dispatch(register({name,email,password}));
-    }
-    // if not equal(else)
-    else{
-      // show error message
+    if(password===confirmPassword){
+      console.log("user data to be submitted:\n", userData)
+      
+      await dispatch(register({name,email,password}))
+      let {token} = JSON.parse(localStorage.getItem("user")!)
+      console.log(token);
+      await dispatch(createStudentDataDefault({email,token}))
+    }else{
       toast.error("Initial and confirm password are different!",{
         autoClose: 8000
       });

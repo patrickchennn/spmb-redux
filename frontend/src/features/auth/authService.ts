@@ -8,7 +8,8 @@ interface UserData{
   password:string,  
 }
 const register = async (userData: UserData) => {
-  const response = await axios.post(API_URL,userData);
+  const response = await axios.post(API_URL+"register",userData);
+  console.log(response);
 
   if(response.status===201){
     localStorage.setItem("user",JSON.stringify(response.data));

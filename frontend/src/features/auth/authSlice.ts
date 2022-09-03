@@ -18,7 +18,7 @@ interface InitialState{
   isLoading: boolean,
   isSuccess: boolean,
   isError: boolean,
-  message: string | any
+  message: string
 }
 const initialState: InitialState = {
   user: user ? user : null,
@@ -61,7 +61,7 @@ const authSlice = createSlice({
       .addCase(register.rejected, (state,action) => {
         state.isLoading = false
         state.isError = true
-        state.message = action.payload
+        state.message = action.payload as string
         state.user = null
       })
       .addCase(login.pending, state => {
@@ -70,7 +70,7 @@ const authSlice = createSlice({
       .addCase(login.rejected,(state,action) => {
         state.isSuccess = false
         state.isError = true
-        state.message = action.payload
+        state.message = action.payload as string
         state.user = null
       })
       .addCase(login.fulfilled,(state,action) => {
@@ -87,7 +87,7 @@ interface UserData{
   email:string,
   password:string,  
 }
-export const register = createAsyncThunk(
+const register = createAsyncThunk(
   "auth/register",
   async (userData: UserData,thunkAPI) => {
     try {
@@ -107,7 +107,7 @@ interface LoginUserData{
   email:string,
   password:string
 }
-export const login = createAsyncThunk(
+const login = createAsyncThunk(
   "auth/login",
   async (loginUserData: LoginUserData, thunkAPI) => {
     try {
@@ -123,5 +123,6 @@ export const login = createAsyncThunk(
 
 console.log(authSlice);
 
+export {login,register}
 export const {reset,logout} = authSlice.actions;
 export default authSlice.reducer;

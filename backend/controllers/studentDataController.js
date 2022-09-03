@@ -27,64 +27,45 @@ const getStudentData = asyncHandler(async (req,res) => {
 
 
 /**
- * @desc Set biodata
- * @route POST /api/biodata
+ * @desc Set student data with default value
+ * @route POST /api/student-data
  * @access Private
  */
 const setStudentData = asyncHandler(async (req,res) => {
+  console.log(req.body);
   const biodata = await biodataModel.create(
     {
+      _id: req.user._id.toString(),
+      user:{
+        _id: req.user._id.toString()
+      },
       dataDiri: {
-        kewarnegaraan: req.body.kewarnegaraan,
         namaLengkap: req.body.namaLengkap,
         jenisKelamin: req.body.jenisKelamin,
-        tanggalLahir: new Date().toLocaleDateString('en-CA'),
+        kewarnegaraan: req.body.kewarnegaraan,
         tempatKotaLahir: req.body.tempatKotaLahir,
-        alamatEmail: req.user.alamatEmail,
+        tanggalLahir: req.body.tanggalLahir,
+        alamatEmail: req.body.alamatEmail,
         noHp: req.body.noHp,
       },
       berkasAdministrasi: {
-        fotoCopyKartuKeluarga:{
-          namaFoto: req.body.namaFoto,
-          data: req.body.data,
-          mimeType: req.body.mimeType,
-        },
-        fotoCopyIjazah:{
-          namaFoto: req.body.namaFoto,
-          data: req.body.data,
-          mimeType: req.body.mimeType,
-        },
-        fotoCopyPrestasi:{
-          namaFoto: req.body.namaFoto,
-          data: req.body.data,
-          mimeType: req.body.mimeType,
-        },
-        pasFoto:{
-          namaFoto: req.body.namaFoto,
-          data: req.body.data,
-          mimeType: req.body.mimeType,
-        },
+        fotoCopyKartuKeluarga: req.body.fotoCopyKartuKeluarga,
+        fotoCopyIjazah: req.body.fotoCopyIjazah,
+        fotoCopyPrestasi: req.body.fotoCopyPrestasi,
+        pasFoto: req.body.pasFoto,
       },
       infoSeleksi:{
         tanggalSeleksi:req.body.tanggalSeleksi,
-        buktiPembayaranSeleksi:{
-          namaFoto: req.body.namaFoto,
-          data: req.body.data,
-          mimeType: req.body.mimeType,
-        },
-        statusPembarayanSeleksi:req.body.statusPembarayanSeleksi,
-        statusPenerimaanSeleksi:req.body.statusPenerimaanSeleksi,
+        buktiPembayaranSeleksi: req.body.buktiPembayaranSeleksi,
+        statusPembarayanSeleksi: req.body.statusPembarayanSeleksi,
+        statusPenerimaanSeleksi: req.body.statusPenerimaanSeleksi,
         prodi:req.body.prodi
       },
       daftarUlang: {
-        buktiPembayaranDaftarUlang:{
-          namaFoto: req.body.namaFoto,
-          data: req.body.data,
-          mimeType: req.body.mimeType,
-        },
+        buktiPembayaranDaftarUlang: req.body.buktiPembayaranDaftarUlang,
         statusPembayaranDaftarUlang:req.body.statusPembayaranDaftarUlang
       },
-      tanggalRegistrasi:{type: Date,default: new Date().toLocaleString()},
+      tanggalRegistrasi:new Date().toLocaleString(),
     }
   )
 
