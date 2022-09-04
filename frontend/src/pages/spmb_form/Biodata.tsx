@@ -2,12 +2,17 @@ import { Container,Row,Col,Button,Form,Nav } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
 import {BsChevronDoubleLeft} from "react-icons/bs"
-import {AiOutlineEdit} from "react-icons/ai"
 import {AiOutlineSend} from "react-icons/ai"
-import {useState,useEffect} from "react"
+import {useState,useEffect,useRef} from "react"
 import { useAppDispatch,useAppSelector } from '../../app/hooks'
+import myIsAlpha from '../../features/myIsAlpha'
+import { toast } from 'react-toastify'
 
 export default function Biodata(){
+  const namaRef = useRef<HTMLInputElement | null>(null)
+  const kewarganegaraanRef = useRef<HTMLInputElement | null>(null)
+  const tempatKotaLahirRef = useRef<HTMLInputElement | null>(null)
+
   const [bioData,setBioData] = useState({
     dataDiri: {
       namaLengkap: "",
@@ -23,7 +28,20 @@ export default function Biodata(){
 
   function handleSubmit(e: React.SyntheticEvent){
     e.preventDefault()
-    console.log("biodata to be submitted: ",bioData)
+    if(!myIsAlpha(namaLengkap)){
+      toast.error("nama haruslah berupa sebuah alphabet(a-z atau A-Z)")
+      console.log(namaRef.current)
+      namaRef.current!.focus()
+    }
+    else if(!myIsAlpha(kewarganegaraan)){
+      toast.error("nama negara haruslah berupa sebuah alphabet(a-z atau A-Z)")
+      kewarganegaraanRef.current!.focus()
+    }
+    else if(!myIsAlpha(tempatKotaLahir)){
+      toast.error("tempat kota lahir haruslah berupa sebuah alphabet(a-z atau A-Z)")
+      tempatKotaLahirRef.current!.focus()
+    }
+    console.log("biodata to be submitted(pass validation): ",bioData)
   }
 
   function handleChange(e: React.SyntheticEvent){
@@ -64,7 +82,7 @@ export default function Biodata(){
               </h5>
               <Form.Group controlId="namaLengkap" className="mb-3" >
                 <Form.Label>Nama Lengkap</Form.Label>
-                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={namaLengkap} type="text" />
+                <Form.Control required ref={namaRef} className="my-if-form-has-value" onChange={handleChange} value={namaLengkap} type="text" />
               </Form.Group>
 
               <Form.Group controlId="jenisKelamin" className="mb-3" >
@@ -78,13 +96,13 @@ export default function Biodata(){
 
               <Form.Group controlId="kewarganegaraan"className="mb-3" >
                 <Form.Label>Kewarganegaraan</Form.Label>
-                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={kewarganegaraan} type="text"/>
+                <Form.Control required ref={kewarganegaraanRef} className="my-if-form-has-value" onChange={handleChange} value={kewarganegaraan} type="text"/>
               </Form.Group>
 
 
               <Form.Group controlId="tempatKotaLahir" className="mb-3" >
                 <Form.Label>Tempat Lahir</Form.Label>
-                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={tempatKotaLahir} type="text" />
+                <Form.Control required ref={tempatKotaLahirRef} className="my-if-form-has-value" onChange={handleChange} value={tempatKotaLahir} type="text" />
               </Form.Group>
 
               <Form.Group controlId="tanggalLahir" className="mb-3" >
