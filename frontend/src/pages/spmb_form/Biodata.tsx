@@ -1,13 +1,53 @@
-import { Container,Row,Col,Button,Form,Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Container,Row,Col,Button,Form,Nav } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
-import {BsChevronDoubleLeft} from "react-icons/bs";
-import {AiOutlineEdit} from "react-icons/ai";
-import {AiOutlineSend} from "react-icons/ai";
+import {BsChevronDoubleLeft} from "react-icons/bs"
+import {AiOutlineEdit} from "react-icons/ai"
+import {AiOutlineSend} from "react-icons/ai"
+import {useState,useEffect} from "react"
+import { useAppDispatch,useAppSelector } from '../../app/hooks'
 
-const Biodata = () => {
+export default function Biodata(){
+  const [bioData,setBioData] = useState({
+    dataDiri: {
+      namaLengkap: "",
+      jenisKelamin: "",
+      kewarganegaraan: "",
+      tempatKotaLahir: "",
+      tanggalLahir: "",
+      alamatEmail: "",
+      noHp: "",
+    },
+  })
+  const {namaLengkap,jenisKelamin,kewarganegaraan,tempatKotaLahir,tanggalLahir,alamatEmail,noHp} = bioData.dataDiri
+
+  function handleSubmit(e: React.SyntheticEvent){
+    e.preventDefault()
+    console.log("biodata to be submitted: ",bioData)
+  }
+
+  function handleChange(e: React.SyntheticEvent){
+    const target = e.target as HTMLInputElement
+    const id = target.id
+    console.log(typeof target.value,id)
+    setBioData(prev => ({
+      dataDiri:{
+        ...prev.dataDiri,
+        [id]: target.value
+      }
+    }))
+  }
+
   return (
     <div className="mb-5" style={{backgroundColor:"#FBF8F1"}}>
+      <style dangerouslySetInnerHTML={{
+        __html: [
+          '.my-if-form-has-value:valid {',
+          '  background-color: whitesmoke',
+          '}'
+          ].join('\n')
+        }}>
+      </style>
       <Container>
         <Row>
           <Col>
@@ -17,49 +57,53 @@ const Biodata = () => {
 
         <Row>
           <Col className="py-4 px-5 border border-2 border-secondary rounded" style={{backgroundColor:"#F7ECDE"}}>
-            <Form>
+            <Form onSubmit={handleSubmit}>
               <h5>
                 Umum
                 <hr className="m-0 rounded-pill" style={{borderTop:"3px solid #424874"}}/>
               </h5>
-              <Form.Group className="mb-3" >
-                <Form.Label htmlFor="namalengkap">Nama Lengkap</Form.Label>
-                <Form.Control type="text" id="namalengkap"/>
+              <Form.Group controlId="namaLengkap" className="mb-3" >
+                <Form.Label>Nama Lengkap</Form.Label>
+                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={namaLengkap} type="text" />
               </Form.Group>
 
-              <Form.Group className="mb-3" >
-                <Form.Label htmlFor="jeniskelamin">Jenis Kelamin</Form.Label>
-                <Form.Control type="text" id="jeniskelamin"/>
+              <Form.Group controlId="jenisKelamin" className="mb-3" >
+                <Form.Label>Jenis Kelamin</Form.Label>
+                <Form.Select required className="my-if-form-has-value" onChange={handleChange}>
+                  <option defaultValue={jenisKelamin}></option>
+                  <option value="pria">pria</option>
+                  <option value="perempuan">perempuan</option>
+                </Form.Select>
               </Form.Group>
 
-              <Form.Group className="mb-3" >
-                <Form.Label htmlFor="kewarnegaraan">Kewarganegaraan</Form.Label>
-                <Form.Control type="text" id="kewarnegaraan"/>
+              <Form.Group controlId="kewarganegaraan"className="mb-3" >
+                <Form.Label>Kewarganegaraan</Form.Label>
+                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={kewarganegaraan} type="text"/>
               </Form.Group>
 
-              <Form.Group className="mb-3" >
-                <Form.Label htmlFor="tanggallahir">Tanggal Lahir</Form.Label>
-                <Form.Control type="date" id="tanggallahir" />
+
+              <Form.Group controlId="tempatKotaLahir" className="mb-3" >
+                <Form.Label>Tempat Lahir</Form.Label>
+                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={tempatKotaLahir} type="text" />
               </Form.Group>
 
-              <Form.Group className="mb-3" >
-                <Form.Label htmlFor="tempatlahir">Tempat Lahir</Form.Label>
-                <Form.Control type="text" id="tempatlahir" />
+              <Form.Group controlId="tanggalLahir" className="mb-3" >
+                <Form.Label>Tanggal Lahir</Form.Label>
+                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={tanggalLahir} type="date" />
               </Form.Group>
-
 
               <h5>
                 KONTAK
-                <hr className="m-0 rounded-pill" style={{borderTop:"3px solid #424874"}}/>
+                <hr className="m-0 rounded-pill" style={{borderTop:"3px solid #424874"}} />
               </h5>
-              <Form.Group className="mb-3" >
-                <Form.Label htmlFor="alamatemail">Alamat Email</Form.Label>
-                <Form.Control type="email" id="alamatemail" />
+              <Form.Group controlId="alamatEmail" className="mb-3" >
+                <Form.Label>Alamat Email</Form.Label>
+                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={alamatEmail} type="email" />
               </Form.Group>
 
-              <Form.Group className="mb-3" >
-                <Form.Label htmlFor="nohp">No Hp</Form.Label>
-                <Form.Control type="number" id="nohp"/>
+              <Form.Group controlId="noHp" className="mb-3" >
+                <Form.Label>No Hp</Form.Label>
+                <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={noHp} type="number" />
               </Form.Group>
 
               <Row>
@@ -68,10 +112,7 @@ const Biodata = () => {
                     <BsChevronDoubleLeft /> BACK
                   </Link>
                   <Button variant="success" type="submit">
-                    <AiOutlineSend /> Submit
-                  </Button>
-                  <Button variant="warning" type="button">
-                    <AiOutlineEdit /> Edit
+                    <AiOutlineSend /> SAVE
                   </Button>
                 </Col>
               </Row>
@@ -86,11 +127,11 @@ const Biodata = () => {
                 backgroundColor:"#F7ECDE",
               }}>
               <Nav className="flex-column gap-2">
-                <Link to="/spmb-form/biodata" className="text-start btn text-dark text-decoration-none">
+                <Link to="#" className="text-start btn text-dark text-decoration-none">
                   <i className="bi bi-1-circle"></i> Datadiri
                 </Link>
 
-                <Link to="/spmb-form/berkas-administrasi" className="text-start btn text-dark text-decoration-none">
+                <Link to="#" className="text-start btn text-dark text-decoration-none">
                   <i className="bi bi-2-circle"></i> Data Orangtua
                 </Link>
               </Nav>
@@ -101,7 +142,3 @@ const Biodata = () => {
     </div>
   )
 }
-
-export default Biodata
-
-// [99,100,1,3,2,199,201,200,202,203]

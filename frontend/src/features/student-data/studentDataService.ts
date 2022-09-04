@@ -6,7 +6,7 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
     dataDiri: {
       namaLengkap: "",
       jenisKelamin: "",
-      kewarnegaraan: "",
+      kewarganegaraan: "",
       tanggalLahir: new Date().toLocaleDateString('en-CA'),
       tempatKotaLahir: "",
       alamatEmail: email,

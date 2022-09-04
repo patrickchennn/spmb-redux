@@ -4,7 +4,7 @@ import studentDataService from "./studentDataService"
 const initialState = {
   studentData: {
     dataDiri: {
-      kewarnegaraan: "",
+      kewarganegaraan: "",
       namaLengkap: "",
       jenisKelamin: "",
       tanggalLahir: new Date().toLocaleDateString('en-CA'),

@@ -42,7 +42,7 @@ const setStudentData = asyncHandler(async (req,res) => {
       dataDiri: {
         namaLengkap: req.body.namaLengkap,
         jenisKelamin: req.body.jenisKelamin,
-        kewarnegaraan: req.body.kewarnegaraan,
+        kewarganegaraan: req.body.kewarganegaraan,
         tempatKotaLahir: req.body.tempatKotaLahir,
         tanggalLahir: req.body.tanggalLahir,
         alamatEmail: req.body.alamatEmail,
