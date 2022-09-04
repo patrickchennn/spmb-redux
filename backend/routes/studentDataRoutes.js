@@ -4,7 +4,6 @@ const {
   getStudentDatas, getStudentData,
   setStudentData,
   updateStudentData,
-  deleteStudentData
 } = require("../controllers/studentDataController.js");
 const { protect } = require("../middleware/authMiddleware.js")
 
@@ -16,6 +15,5 @@ router.route('/')
 router.route("/:id")
   .get(protect,getStudentData)
   .put(protect,updateStudentData)
-  .delete(protect,deleteStudentData)
 
 module.exports = router

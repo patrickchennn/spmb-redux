@@ -78,6 +78,20 @@ const authSlice = createSlice({
         state.isLoading = false
         state.user = action.payload
       })
+      .addCase(deleteAccount.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(deleteAccount.rejected,(state,action) => {
+        state.isSuccess = false
+        state.isError = true
+        state.message = action.payload as string
+      })
+      .addCase(deleteAccount.fulfilled,(state,action) => {
+        state.isSuccess = true
+        state.isLoading = false
+        state.message = action.payload as string
+        state.user = null
+      })
   }
 });
 
@@ -120,9 +134,21 @@ const login = createAsyncThunk(
   }
 )
 
+// Delete user
+const deleteAccount = createAsyncThunk(
+  "user/deleteAccount",
+  async(token: string, thunkAPI) => {
+    try {
+      return await authService.deleteAccount(token)
+    } catch (error: any) {
+      const errMsg: string = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+      return thunkAPI.rejectWithValue(errMsg);
+    }
+  }
+)
 
 console.log(authSlice);
 
-export {login,register}
+export {login,register,deleteAccount}
 export const {reset,logout} = authSlice.actions;
 export default authSlice.reducer;

@@ -95,30 +95,9 @@ const updateStudentData = asyncHandler(async (req,res) => {
   res.status(200).json(updatedStudentData);
 });
 
-
-/**
- * @desc Delete student data
- * @route DELETE /api/student-data/:id
- * @access Private
- */
-const deleteStudentData = asyncHandler(async (req,res) => {
-  const id = req.params.id;
-  const studentData = await studentDataModel.findById(id);
-  if(!studentData)  res.status(400).json(studentData);
-
-  if(req.user._id.toString()!==id){
-    res.status(401);
-    throw new Error(`${studentData.email} you are not allowed to modify other people data!`);
-  }
-  console.log(req.user);
-  await studentDataModel.findByIdAndDelete(id);
-  res.status(200).json({id});
-});
-
 module.exports = {
   getStudentDatas,
   getStudentData,
   setStudentData,
   updateStudentData,
-  deleteStudentData
 }

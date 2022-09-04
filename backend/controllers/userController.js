@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const userModel = require("../model/userModel.js");
+const studentDataModel = require("../model/studentDataModel.js")
 
 /**
  * @desc Register user
@@ -94,6 +95,36 @@ const getMe = asyncHandler(async (req,res) => {
   });
 });
 
+
+/**
+ * @desc Delete a user
+ * @route DELETE /api/user/delete/:id
+ * @access Public
+ */
+ const deleteUser = asyncHandler(async (req,res) => {
+   console.log("delete user: ",req.user)
+   const id = req.user._id.toString()
+   console.log(id)
+   const user = await userModel.findById(id)
+   if(!user) {
+    res.status(400)
+    throw new Error("user does not exist")
+  }
+  const studentData = await studentDataModel.findById(id)
+  if(!studentData){
+    res.status(400)
+    throw new Error("student data does not exist")
+  }
+  const userRemoveResponse = await userModel.findByIdAndRemove(id)
+  const studentRemoveResponse = await studentDataModel.findByIdAndRemove(id)
+  // console.log(userRemoveResponse)
+  // console.log(studentRemoveResponse)
+
+  res.status(201).json(`user account with email: ${req.user.email} were just deleted!`)
+});
+
+
+
 /**
  * @desc Generate JWT
  */
@@ -105,4 +136,4 @@ const generateToken = (id) => jwt.sign(
   }
 );
 
-module.exports = {registerUser,loginUser,getMe};
+module.exports = {registerUser,loginUser,getMe,deleteUser};

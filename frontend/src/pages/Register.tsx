@@ -36,7 +36,7 @@ const Register = () => {
   const {name,email,password,confirmPassword} = userData;
 
   useEffect(() => {
-    // console.log("USE EFFECT!")
+    console.log("USE EFFECT!")
     if(isError) toast.error(message);
     
     if(isSuccess || user) navigate('/spmb-form')
@@ -130,7 +130,7 @@ const Register = () => {
 
               <Form.Group className="mb-3" controlId="confirmPassword">
                 <Form.Label>Confirm Password</Form.Label>
-                <Form.Control ref={confirmPasswordRef} required type="password" value={confirmPassword} onChange={handleChange} />
+                <Form.Control required placeholder="Confirm your password" ref={confirmPasswordRef}  type="password" value={confirmPassword} onChange={handleChange} />
               </Form.Group>
 
               <div className="d-flex justify-content-end gap-3">
