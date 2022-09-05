@@ -22,7 +22,7 @@ const getStudentData = asyncHandler(async (req,res) => {
   const studentData = await studentDataModel.findById(req.params.id);
   if(!studentData)  res.status(400).json(studentData);
 
-  res.status(200).json(biodata);
+  res.status(200).json(studentData);
 });
 
 
