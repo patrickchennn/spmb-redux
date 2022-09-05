@@ -16,6 +16,7 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
       fotoCopyKartuKeluarga:null,
       fotoCopyIjazah:null,
       fotoCopyPrestasi:null,
+      fotoCopyUAN:null,
       pasFoto:null,
     },
     infoSeleksi:{

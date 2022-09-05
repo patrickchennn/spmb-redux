@@ -16,6 +16,7 @@ const initialState = {
       fotoCopyKartuKeluarga: null,
       fotoCopyIjazah: null,
       fotoCopyPrestasi: null,
+      fotoCopyUAN:null,
       pasFoto: null,
     },
     infoSeleksi:{

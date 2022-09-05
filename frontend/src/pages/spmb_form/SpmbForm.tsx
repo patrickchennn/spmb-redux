@@ -19,10 +19,10 @@ export default function SpmbForm(){
   const {user,message} = useAppSelector(state =>  state.auth)
   useEffect(() => {
     console.log('USE EFFECT!')
-    if(message) {
-      toast.success(message)
-    }
-  },[message])
+    if(message) toast.success(message)
+  }, [message])
+
+
 
   function handleLogout(){
     if(!window.confirm(`Logout: ${user!.email}?`)) return
