@@ -10,7 +10,7 @@ const studentDataSchema = new mongoose.Schema(
     dataDiri: {
       namaLengkap: {type:String, default:""},
       jenisKelamin: {type:String, default:""},
-      kewarnegaraan: {type:String, default:""},
+      kewarganegaraan: {type:String, default:""},
       tempatKotaLahir: {type:String, default:""},
       tanggalLahir: {type:String, default:new Date().toLocaleDateString('en-CA')},
       alamatEmail: {type:String, default:""},

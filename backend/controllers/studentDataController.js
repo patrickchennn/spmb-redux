@@ -22,7 +22,7 @@ const getStudentData = asyncHandler(async (req,res) => {
   const studentData = await studentDataModel.findById(req.params.id);
   if(!studentData)  res.status(400).json(studentData);
 
-  res.status(200).json(biodata);
+  res.status(200).json(studentData);
 });
 
 
@@ -42,7 +42,7 @@ const setStudentData = asyncHandler(async (req,res) => {
       dataDiri: {
         namaLengkap: req.body.namaLengkap,
         jenisKelamin: req.body.jenisKelamin,
-        kewarnegaraan: req.body.kewarnegaraan,
+        kewarganegaraan: req.body.kewarganegaraan,
         tempatKotaLahir: req.body.tempatKotaLahir,
         tanggalLahir: req.body.tanggalLahir,
         alamatEmail: req.body.alamatEmail,
