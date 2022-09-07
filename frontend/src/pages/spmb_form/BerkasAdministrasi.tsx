@@ -1,52 +1,78 @@
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
 import { Container,Row,Col,Button,Form,Table,Badge } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import {BsChevronDoubleLeft} from "react-icons/bs";
-import {MdOutlineSaveAlt} from 'react-icons/md';
+import {BsChevronDoubleLeft} from "react-icons/bs"
+import {MdOutlineSaveAlt} from 'react-icons/md'
 import {useState} from "react"
-import ShowBerkas from '../../components/ShowBerkas';
+import ShowBerkas from '../../components/ShowBerkas'
+import FormBerkas from '../../components/FormBerkas'
+import axios from 'axios'
 
 export default function BerkasAdministrasi(){
-  const [previewBerkas,setPreviewBerkas] = useState({
+  interface FormDataType{
+    lastModified: number,
+    lastModifiedData:Date,
+    name: string,
+    size: number,
+    type: string,
+    webkitRelativePath: string,
+  }
+  interface BerkasAdm {
+    fotoCopyKartuKeluarga: null | FormDataType,
+    fotoCopyIjazah: null | FormDataType,
+    fotoCopyPrestasi: null | FormDataType,
+    fotoCopyUAN: null | FormDataType,
+    pasFoto: null | FormDataType,
+  }
+  const [berkasAdm,setBerkasAdm] = useState<BerkasAdm>({
     fotoCopyKartuKeluarga:null,
     fotoCopyIjazah:null,
     fotoCopyPrestasi:null,
     fotoCopyUAN:null,
     pasFoto:null,
   })
-  const [berkasAdm,setBerkasAdm] = useState({
-    berkasAdministrasi:{
-      fotoCopyKartuKeluarga:null,
-      fotoCopyIjazah:null,
-      fotoCopyPrestasi:null,
-      fotoCopyUAN:null,
-      pasFoto:null,
-    }
+
+  interface PreviewBerkas{
+    fotoCopyKartuKeluarga: Blob|null,
+    fotoCopyIjazah: Blob|null,
+    fotoCopyPrestasi: Blob|null,
+    fotoCopyUAN: Blob|null,
+    pasFoto: Blob|null,
+  }
+  const [previewBerkas,setPreviewBerkas] = useState<PreviewBerkas>({
+    fotoCopyKartuKeluarga:null,
+    fotoCopyIjazah:null,
+    fotoCopyPrestasi:null,
+    fotoCopyUAN:null,
+    pasFoto:null,
   })
 
 
-  function handleSubmit(e: React.SyntheticEvent){
+
+
+  async function handleSubmit(e: React.SyntheticEvent){
+    const {token} = JSON.parse(localStorage.getItem("user")!)
     e.preventDefault()
     console.log("berkas administrasi to be submitted: ", berkasAdm)
-    console.log(previewBerkas)
+    console.log("preview berkas: ", previewBerkas)
     const fd = new FormData()
-  }
+    for(const key in berkasAdm){
+      // console.log(key, berkasAdm[key as keyof typeof berkasAdm])
+      fd.append(key,berkasAdm[key as keyof typeof berkasAdm] as unknown as Blob)
+    }
 
-  function handleChange(e: React.SyntheticEvent){
-    const target = e.target as HTMLInputElement
-    setBerkasAdm(prev => ({
-      berkasAdministrasi: {
-        ...prev.berkasAdministrasi,
-        [target.name]: target.files![0]
+    // console.table([...fd])
+    const config = {
+      headers:{
+        "Content-Type": "multipart/form-data",
+        "Authorization": `Bearer ${token}`
       }
-    }))
-    setPreviewBerkas(prev => ({
-      ...prev,
-      [target.name]: URL.createObjectURL(target.files![0])
-    }))
+    }
+    const res = await axios.post("/api/berkas-adm",fd,config)
+    console.log(res)
   }
 
-
+  // view
   return (
     <div style={{backgroundColor:"#FBF8F1"}}>
       <Container>
@@ -56,7 +82,7 @@ export default function BerkasAdministrasi(){
           </Col>
         </Row>
 
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} method="POST" action="/api/berkas-adm" encType="multipart/form-data">
           <Row>
             <Col className="col-8">
               <Table striped bordered hover style={{backgroundColor: "rgb(247, 236, 222)"}}>
@@ -70,44 +96,62 @@ export default function BerkasAdministrasi(){
 
                 <tbody>
                   <tr>
-                    <td>Fotocopy Kartu Keluarga<span className='text-danger'>*</span></td>
+                    <td className="">Fotocopy Kartu Keluarga<span className='text-danger'>*</span></td>
                     <td>
-                      <Form.Control required name="fotoCopyKartuKeluarga" onChange={handleChange} type="file"/>
-                      <ShowBerkas selectedImage={previewBerkas.fotoCopyKartuKeluarga}/>
+                      <FormBerkas 
+                        selectedProperty='fotoCopyKartuKeluarga' 
+                        berkasAdm={berkasAdm} 
+                        setBerkasAdm={setBerkasAdm} 
+                        setPreviewBerkas={setPreviewBerkas}
+                        isRequired={true}
+                      />
+                      <ShowBerkas selectedProperty={previewBerkas.fotoCopyKartuKeluarga}/>
                     </td>
                     <td>status</td>
                   </tr>
                   <tr>
                     <td>Fotocopy Ijazah<span className='text-danger'>*</span></td>
                     <td>
-                      <Form.Control required name="fotoCopyIjazah" onChange={handleChange} type="file"/>
-                      <ShowBerkas selectedImage={previewBerkas.fotoCopyIjazah}/>
+                    <FormBerkas 
+                        selectedProperty='fotoCopyIjazah' 
+                        berkasAdm={berkasAdm} 
+                        setBerkasAdm={setBerkasAdm} 
+                        setPreviewBerkas={setPreviewBerkas} 
+                        isRequired={true}
+                      />
+                      <ShowBerkas selectedProperty={previewBerkas.fotoCopyIjazah}/>
                     </td>
                     <td >
-                      <Badge pill bg="success">
-                        Diterima
-                      </Badge>
                       <Badge pill bg="warning">
                         Diproses
-                      </Badge>
-                      <Badge pill bg="danger">
-                        Ditolak
                       </Badge>
                     </td>
                   </tr>
                   <tr>
                     <td>Fotocopy Prestasi<sup className="text-secondary">opt</sup></td>
                     <td>
-                      <Form.Control name="fotoCopyPrestasi" onChange={handleChange} type="file"/>
-                      <ShowBerkas selectedImage={previewBerkas.fotoCopyPrestasi}/>
+                    <FormBerkas 
+                        selectedProperty='fotoCopyPrestasi' 
+                        berkasAdm={berkasAdm} 
+                        setBerkasAdm={setBerkasAdm} 
+                        setPreviewBerkas={setPreviewBerkas}
+                        isRequired={false}
+                      />
+                      <ShowBerkas selectedProperty={previewBerkas.fotoCopyPrestasi}/>
                     </td>
                     <td>status</td>
                   </tr>
                   <tr>
                     <td>Fotocopy Nilai Ujian Akhir Nasional<sup className="text-secondary">opt</sup></td>
                     <td>
-                      <Form.Control name="fotoCopyUAN" onChange={handleChange} type="file" />
-                      <ShowBerkas selectedImage={previewBerkas.fotoCopyUAN}/>
+                    <FormBerkas 
+                        selectedProperty='fotoCopyUAN' 
+                        berkasAdm={berkasAdm} 
+                        setBerkasAdm={setBerkasAdm} 
+                        setPreviewBerkas={setPreviewBerkas} 
+                        isRequired={false}
+                      />
+                      <ShowBerkas selectedProperty={previewBerkas.fotoCopyUAN}/>
                     </td>
                     <td>status</td>
                   </tr>
@@ -139,8 +183,14 @@ export default function BerkasAdministrasi(){
 
             <Col>
               <h4 className="fw-bold">Pas foto<span className='text-danger'>*</span></h4>
-              <Form.Control required name="pasFoto" onChange={handleChange} type="file"/>
-              <ShowBerkas selectedImage={previewBerkas.pasFoto}/>
+              <FormBerkas 
+                  selectedProperty='pasFoto'
+                  berkasAdm={berkasAdm}
+                  setBerkasAdm={setBerkasAdm}
+                  setPreviewBerkas={setPreviewBerkas}
+                  isRequired={true}
+                />
+                <ShowBerkas selectedProperty={previewBerkas.pasFoto}/>
             </Col>
           </Row>
         </Form>
@@ -148,3 +198,12 @@ export default function BerkasAdministrasi(){
     </div>
   )
 }
+
+/*
+                      <Badge pill bg="success">
+                        Diterima
+                      </Badge>
+                      <Badge pill bg="danger">
+                        Ditolak
+                      </Badge>
+*/

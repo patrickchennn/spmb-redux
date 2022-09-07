@@ -41,6 +41,14 @@ const studentDataSchema = new mongoose.Schema(
         },
         default:null,
       },
+      fotoCopyUAN:{
+        type:{
+          namaFoto: String,
+          data: Buffer,
+          mimeType: String,
+        },
+        default:null,
+      },
       pasFoto:{
         type:{
           namaFoto: String,

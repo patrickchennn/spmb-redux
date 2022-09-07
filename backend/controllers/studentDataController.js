@@ -52,6 +52,7 @@ const setStudentData = asyncHandler(async (req,res) => {
         fotoCopyKartuKeluarga: req.body.fotoCopyKartuKeluarga,
         fotoCopyIjazah: req.body.fotoCopyIjazah,
         fotoCopyPrestasi: req.body.fotoCopyPrestasi,
+        fotoCopyUAN: req.body.fotoCopyUAN,
         pasFoto: req.body.pasFoto,
       },
       infoSeleksi:{

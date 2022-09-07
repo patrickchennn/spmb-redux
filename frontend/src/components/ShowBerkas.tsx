@@ -1,13 +1,17 @@
 interface ShowBerkasProps{
-  selectedImage: Blob | null
+  selectedProperty: Blob | null
 }
-export default function ShowBerkas({selectedImage}: ShowBerkasProps){
+export default function ShowBerkas({selectedProperty}: ShowBerkasProps){
+  function handleZoomPicture(e: React.SyntheticEvent){
+    const target = e.target as HTMLInputElement
+    console.log("zoom in dah")
+  }
   return (
     <>
       {
-        selectedImage &&
-        <div className='my-2 d-flex justify-content-center'>
-          <img src={`${selectedImage}`} width="150px" height="150px" alt="foto copy kartu keluarga" />
+        selectedProperty &&
+        <div className='d-flex justify-content-center'>
+          <img onClick={handleZoomPicture} style={{cursor:"zoom-in"}} src={`${selectedProperty}`} width="50%" height="50%" alt="foto copy kartu keluarga" />
         </div>
       }
     </>
