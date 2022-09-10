@@ -20,14 +20,17 @@ interface FormDataType{
 interface BerkasAdmDatabaseVer{
   name: string,
   mimetype: string,
-  data: Buffer
+  data: {
+    type: string,
+    data:Buffer
+  }
 }
 interface BerkasAdm {
-  fotoCopyKartuKeluarga: FormDataType | BerkasAdmDatabaseVer | String,
-  fotoCopyIjazah: FormDataType | BerkasAdmDatabaseVer | String,
-  fotoCopyPrestasi: FormDataType | BerkasAdmDatabaseVer | String,
-  fotoCopyUAN: FormDataType | BerkasAdmDatabaseVer | String,
-  pasFoto: FormDataType | BerkasAdmDatabaseVer | String,
+  fotoCopyKartuKeluarga: string | FormDataType | BerkasAdmDatabaseVer,
+  fotoCopyIjazah: string | FormDataType | BerkasAdmDatabaseVer,
+  fotoCopyPrestasi: string | FormDataType | BerkasAdmDatabaseVer,
+  fotoCopyUAN: string | FormDataType | BerkasAdmDatabaseVer,
+  pasFoto: string | FormDataType | BerkasAdmDatabaseVer,
 }
 interface FormBerkasProps{
   selectedProperty: string,
@@ -37,7 +40,12 @@ interface FormBerkasProps{
   isRequired: boolean
 }
 
+
+
+
+
 export default function FormBerkas({selectedProperty,berkasAdm,setBerkasAdm,setPreviewBerkas,isRequired}: FormBerkasProps){
+  type KeyBerkasAdm = keyof typeof berkasAdm;
   const berkasInputRef = useRef<HTMLInputElement|null>(null)
 
   const handleUpload = (e: React.SyntheticEvent) => {
@@ -75,16 +83,20 @@ export default function FormBerkas({selectedProperty,berkasAdm,setBerkasAdm,setP
       </Form.Label>
       <Form.Label className="w-50 btn btn-light rounded-0">
         {
-          berkasAdm[selectedProperty as keyof typeof berkasAdm] ? 
-            berkasAdm[selectedProperty as keyof typeof berkasAdm].name :
+          berkasAdm[selectedProperty as KeyBerkasAdm] ? 
+            (berkasAdm[selectedProperty as KeyBerkasAdm] as BerkasAdmDatabaseVer | FormDataType).name :
             "No file chosen"
         }
       </Form.Label>
       <Button onClick={()=>handleChangeBerkas(selectedProperty)} className="mb-2 rounded-0 rounded-end" variant='danger'><BsTrash /></Button>
       {
-        isRequired ? 
-          <Form.Control  ref={berkasInputRef} className="d-none"  name={selectedProperty} onChange={handleUpload} type="file"/> :
-          <Form.Control ref={berkasInputRef} className="d-none"  name={selectedProperty} onChange={handleUpload} type="file"/>
+          <Form.Control
+            ref={berkasInputRef}
+            className="d-none" 
+            name={selectedProperty}
+            onChange={handleUpload}
+            type="file"
+          />
       }
     </Form.Group>
   )

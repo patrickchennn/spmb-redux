@@ -13,12 +13,7 @@ import {useEffect} from "react"
 import { toast } from 'react-toastify'
 import { Buffer } from 'buffer';
 
-interface BerkasAdmDatabaseVer{
-  name: string,
-  mimetype: string,
-  data: Buffer
-}
-interface FormDataType{
+type FormDataType = {
   lastModified: number,
   lastModifiedData:Date,
   name: string,
@@ -26,12 +21,20 @@ interface FormDataType{
   type: string,
   webkitRelativePath: string,
 }
+type BerkasAdmDatabaseVer = {
+  name: string,
+  mimetype: string,
+  data: {
+    type: string,
+    data: Buffer
+  }
+}
 interface BerkasAdm {
-  fotoCopyKartuKeluarga: FormDataType | BerkasAdmDatabaseVer | String,
-  fotoCopyIjazah: FormDataType | BerkasAdmDatabaseVer | String,
-  fotoCopyPrestasi: FormDataType | BerkasAdmDatabaseVer | String,
-  fotoCopyUAN: FormDataType | BerkasAdmDatabaseVer | String,
-  pasFoto: FormDataType | BerkasAdmDatabaseVer | String,
+  fotoCopyKartuKeluarga: string | BerkasAdmDatabaseVer | FormDataType,
+  fotoCopyIjazah: string | BerkasAdmDatabaseVer | FormDataType,
+  fotoCopyPrestasi: string | BerkasAdmDatabaseVer | FormDataType,
+  fotoCopyUAN: string | BerkasAdmDatabaseVer | FormDataType,
+  pasFoto: string | BerkasAdmDatabaseVer | FormDataType,
 }
 interface PreviewBerkas{
   fotoCopyKartuKeluarga: string,
@@ -40,6 +43,10 @@ interface PreviewBerkas{
   fotoCopyUAN: string,
   pasFoto: string,
 }
+
+
+
+
 
 export default function BerkasAdministrasi(){
   const [berkasAdm,setBerkasAdm] = useState<BerkasAdm>({
@@ -59,12 +66,6 @@ export default function BerkasAdministrasi(){
   })
   const dispatch = useAppDispatch()
   const {isError,isLoading,isSuccess,message} = useAppSelector(state => state.studentData)
-
-
-
-
-
-
 
 
 
@@ -95,7 +96,7 @@ export default function BerkasAdministrasi(){
         // if we want to use base64 to represent the image
         // https://stackoverflow.com/questions/8499633/how-to-display-base64-images-in-html
         // `data:${mimetype};base64,${toB64}`
-        const toB64 = toBuffer.toString('base64')
+        // const toB64 = toBuffer.toString('base64')
         // console.log("toB64",toB64)
 
         // if we want to use blob
@@ -131,21 +132,30 @@ export default function BerkasAdministrasi(){
       let fileType;
 
       //  if berkasAdm is from the database(old)
-      if(berkasAdm[key as KeyBerkasAdm].type === undefined){
-        fileType = berkasAdm[key as KeyBerkasAdm].mimetype
+      if((berkasAdm[key as KeyBerkasAdm] as FormDataType).type === undefined){
+        fileType = (berkasAdm[key as KeyBerkasAdm] as BerkasAdmDatabaseVer).mimetype
         
-        const imageArrayBuffer = berkasAdm[key as KeyBerkasAdm].data.data
+        const imageArrayBuffer = (berkasAdm[key as KeyBerkasAdm] as BerkasAdmDatabaseVer).data.data
         const toBuffer = new (Buffer as any).from(imageArrayBuffer)
         const toBlob = new Blob([toBuffer], {type: fileType})
         // console.log(toBlob)
-        fd.append(key,toBlob,berkasAdm[key as KeyBerkasAdm].name)
+        fd.append(
+          key,
+          toBlob,
+          (berkasAdm[key as KeyBerkasAdm] as BerkasAdmDatabaseVer).name
+        )
 
         // console.log(fileType)
       }
       // if it's not(new)
       else{
-        fileType = berkasAdm[key as KeyBerkasAdm].type
-        fd.append(key,berkasAdm[key as KeyBerkasAdm],berkasAdm[key as KeyBerkasAdm].name)
+        fileType = (berkasAdm[key as KeyBerkasAdm] as FormDataType).type
+        
+        fd.append(
+          key,
+          berkasAdm[key as KeyBerkasAdm] as unknown as Blob,
+          (berkasAdm[key as KeyBerkasAdm] as FormDataType).name
+        )
         // console.log(fileType)
       }
     }
@@ -158,7 +168,7 @@ export default function BerkasAdministrasi(){
       }
     }
     try {
-      const res = await axios.post("/api/berkas-adm",fd,config)
+      await axios.post("/api/berkas-adm",fd,config)
       toast.success("Data have been saved!")
     } catch (err: any){
       toast.error(err.response.data)
@@ -166,7 +176,6 @@ export default function BerkasAdministrasi(){
     }
     // else if(res.status===500) toast.error(res.response.message+res.statusText)
   }
-
 
   useEffect(() => {
     console.log("USE EFFECT 1!");
@@ -189,10 +198,11 @@ export default function BerkasAdministrasi(){
       dispatch(resetStudentDataState())
     }
   }, [message,isError,isLoading,isSuccess])
-  
 
 
-  // view
+
+
+
   if(isLoading){
     return (
       <h1>Loading...</h1>
@@ -232,7 +242,7 @@ export default function BerkasAdministrasi(){
                       />
                       <ShowBerkas 
                         imgSrc={previewBerkas.fotoCopyKartuKeluarga} 
-                        imgName={berkasAdm.fotoCopyKartuKeluarga.name}
+                        imgName={(berkasAdm.fotoCopyKartuKeluarga as BerkasAdmDatabaseVer | FormDataType).name}
                       />
                     </td>
                     <td>status</td>
@@ -249,7 +259,7 @@ export default function BerkasAdministrasi(){
                       />
                       <ShowBerkas 
                         imgSrc={previewBerkas.fotoCopyIjazah} 
-                        imgName={berkasAdm.fotoCopyIjazah.name}
+                        imgName={(berkasAdm.fotoCopyIjazah as BerkasAdmDatabaseVer | FormDataType).name}
                       />
                     </td>
                     <td >
@@ -270,7 +280,7 @@ export default function BerkasAdministrasi(){
                       />
                       <ShowBerkas 
                         imgSrc={previewBerkas.fotoCopyPrestasi} 
-                        imgName={berkasAdm.fotoCopyPrestasi.name}
+                        imgName={(berkasAdm.fotoCopyPrestasi as BerkasAdmDatabaseVer | FormDataType).name}
                       />
                     </td>
                     <td>status</td>
@@ -287,7 +297,7 @@ export default function BerkasAdministrasi(){
                       />
                       <ShowBerkas 
                         imgSrc={previewBerkas.fotoCopyUAN} 
-                        imgName={berkasAdm.fotoCopyUAN.name}
+                        imgName={(berkasAdm.fotoCopyUAN as BerkasAdmDatabaseVer | FormDataType).name}
                       />
                     </td>
                     <td>status</td>
@@ -329,7 +339,7 @@ export default function BerkasAdministrasi(){
                 />
               <ShowBerkas 
                 imgSrc={previewBerkas.pasFoto} 
-                imgName={berkasAdm.pasFoto.name}
+                imgName={(berkasAdm.pasFoto as BerkasAdmDatabaseVer | FormDataType).name}
               />
             </Col>
           </Row>
