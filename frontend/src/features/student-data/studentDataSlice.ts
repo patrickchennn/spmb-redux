@@ -13,22 +13,22 @@ const initialState = {
       noHp: "",
     },
     berkasAdministrasi: {
-      fotoCopyKartuKeluarga: null,
-      fotoCopyIjazah: null,
-      fotoCopyPrestasi: null,
-      fotoCopyUAN:null,
-      pasFoto: null,
+      fotoCopyKartuKeluarga:"",
+      fotoCopyIjazah:"",
+      fotoCopyPrestasi:"",
+      fotoCopyUAN:"",
+      pasFoto:"",
     },
     infoSeleksi:{
       tanggalSeleksi: new Date().toLocaleDateString('en-CA'),
-      buktiPembayaranSeleksi: null,
-      statusPembarayanSeleksi:"",
-      statusPenerimaanSeleksi:"",
+      buktiPembayaranSeleksi: "",
+      statusPembayaranSeleksi:false,
+      statusPenerimaanSeleksi:false,
       prodi:""
     },
     daftarUlang: {
-      buktiPembayaranDaftarUlang: null,
-      statusPembayaranDaftarUlang: null
+      buktiPembayaranDaftarUlang: "",
+      statusPembayaranDaftarUlang: false
     },
     tanggalRegistrasi:new Date().toLocaleString(),
   },

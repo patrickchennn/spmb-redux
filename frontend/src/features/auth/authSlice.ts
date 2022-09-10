@@ -147,7 +147,7 @@ const deleteAccount = createAsyncThunk(
   }
 )
 
-console.log(authSlice);
+// console.log(authSlice);
 
 export {login,register,deleteAccount}
 export const {reset,logout} = authSlice.actions;

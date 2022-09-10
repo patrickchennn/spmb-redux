@@ -43,11 +43,11 @@ app.post(
   ,async (req,res) => {
     const finalBerkasAdm = {
       berkasAdministrasi: {
-        fotoCopyKartuKeluarga:null,
-        fotoCopyIjazah:null,
-        fotoCopyPrestasi:null,
-        fotoCopyUAN:null,
-        pasFoto:null,
+        fotoCopyKartuKeluarga:"",
+        fotoCopyIjazah:"",
+        fotoCopyPrestasi:"",
+        fotoCopyUAN:"",
+        pasFoto:"",
       }
     }
 
@@ -57,8 +57,8 @@ app.post(
     Object.keys(berkasAdm).forEach(key => {
       const {originalname,mimetype,buffer} = berkasAdm[key][0]
       finalBerkasAdm.berkasAdministrasi[key] = {
-        namaForo:originalname,
-        mimeType:mimetype,
+        name:originalname,
+        mimetype,
         data:buffer
       }
     })
@@ -71,8 +71,9 @@ app.post(
       // {new:true}
     )
     res.status(200).json(updatedStudentData);
+    // res.status(200).json("ye");
   }
 )
 
-app.listen(port,console.log(`\napp running on http://localhost:${port}`))
+app.listen(port,console.log(`\napp running on http://localhost:${port}`));
 

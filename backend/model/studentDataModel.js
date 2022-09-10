@@ -1,5 +1,14 @@
 const {mongoose} = require('mongoose');
 
+const imageSchema = new mongoose.Schema({
+  img: {
+    name: String,
+    data: Buffer,
+    mimetype: String,
+    default:"",
+  }
+},{_id: false})
+
 const studentDataSchema = new mongoose.Schema(
   {
     user:{
@@ -17,71 +26,50 @@ const studentDataSchema = new mongoose.Schema(
       noHp: {type:String,default:""},
     },
     berkasAdministrasi: {
-      fotoCopyKartuKeluarga:{
-        type:{
-          namaFoto: String,
-          data: Buffer,
-          mimeType: String,
-        },
-        default:null,
+      fotoCopyKartuKeluarga: {
+        name: String,
+        data: Buffer,
+        mimetype: String, default:""
       },
-      fotoCopyIjazah:{
-        type:{
-          namaFoto: String,
-          data: Buffer,
-          mimeType: String,
-        },
-        default:null,
+      fotoCopyIjazah: {
+        name: String,
+        data: Buffer,
+        mimetype: String, default:""
       },
-      fotoCopyPrestasi:{
-        type:{
-          namaFoto: String,
-          data: Buffer,
-          mimeType: String,
-        },
-        default:null,
+      fotoCopyPrestasi: {
+        name: String,
+        data: Buffer,
+        mimetype: String, default:""
       },
-      fotoCopyUAN:{
-        type:{
-          namaFoto: String,
-          data: Buffer,
-          mimeType: String,
-        },
-        default:null,
+      fotoCopyUAN: {
+        name: String,
+        data: Buffer,
+        mimetype: String, default:""
       },
-      pasFoto:{
-        type:{
-          namaFoto: String,
-          data: Buffer,
-          mimeType: String,
-        },
-        default:null,
+      pasFoto: {
+        name: String,
+        data: Buffer,
+        mimetype: String, default:""
       },
     },
     infoSeleksi:{
       tanggalSeleksi:{type: String,default: new Date().toLocaleDateString('en-CA')},
-      buktiPembayaranSeleksi:{
-        type:{
-          namaFoto: String,
+      buktiPembayaranSeleksi: {
+          name: String,
           data: Buffer,
-          mimeType: String,
-        },
-        default:null,
+          mimetype: String, default:""
       },
-      statusPembarayanSeleksi:Boolean,
+      statusPembayaranSeleksi:Boolean,
       statusPenerimaanSeleksi:Boolean,
       prodi:{type:String, default:""}
     },
     daftarUlang: {
-      buktiPembayaranDaftarUlang:{
-        type:{
-          namaFoto: String,
-          data: Buffer,
-          mimeType: String,
-        },
-        default:null,
+      buktiPembayaranDaftarUlang: {
+        name: String,
+        data: Buffer,
+        mimetype: String, default:""
       },
-      statusPembayaranDaftarUlang:{type: String, default:""}
+      statusPembayaranDaftarUlang: Boolean
     },
     tanggalRegistrasi:{type: String, default: new Date().toLocaleString()},
   },
@@ -92,4 +80,4 @@ const studentDataSchema = new mongoose.Schema(
 );
 const studentDataModel = mongoose.model('Biodata', studentDataSchema,"student_data");
 
-module.exports = studentDataModel;
+module.exports = studentDataModel
