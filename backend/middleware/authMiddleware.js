@@ -23,14 +23,13 @@ const protect = asyncHandler(async (req,res,next) => {
       console.log("req.user: ",req.user);
       next();
     } catch (error) {
-      console.error(error);
-      res.status(401);
+      console.error(`[Error]: ${error}`.red);
+      res.status(401).send(error);
       throw new Error(error);
     }
   }
-  // console.log("skip next()?");
   if(!token){
-    res.status(401);
+    res.status(401).send("Not authorized. No token")
     throw new Error("Not authorized. No token");
   }
 });

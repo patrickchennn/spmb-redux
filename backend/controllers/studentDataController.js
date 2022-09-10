@@ -1,5 +1,4 @@
 const asyncHandler = require("express-async-handler");
-const biodataModel = require("../model/studentDataModel.js");
 const studentDataModel = require("../model/studentDataModel.js");
 
 /**
@@ -8,7 +7,7 @@ const studentDataModel = require("../model/studentDataModel.js");
  * @access Private
  */
 const getStudentDatas = asyncHandler(async (req,res) => {
-  const studentDatas = await biodataModel.find();
+  const studentDatas = await studentDataModel.find();
   res.status(200).json(studentDatas);
 });
 
@@ -32,44 +31,49 @@ const getStudentData = asyncHandler(async (req,res) => {
  * @access Private
  */
 const setStudentData = asyncHandler(async (req,res) => {
-  console.log(req.body);
-  const biodata = await biodataModel.create(
+  console.log("POST /api/student-data: ",req.body);
+  console.log(req.body.berkasAdministrasi);
+  console.log(req.body.berkasAdministrasi.fotoCopyKartuKeluarga);
+  console.log(req.body.dataDiri)
+
+  const studentData = await studentDataModel.create(
     {
       _id: req.user._id.toString(),
       user:{
         _id: req.user._id.toString()
       },
       dataDiri: {
-        namaLengkap: req.body.namaLengkap,
-        jenisKelamin: req.body.jenisKelamin,
-        kewarganegaraan: req.body.kewarganegaraan,
-        tempatKotaLahir: req.body.tempatKotaLahir,
-        tanggalLahir: req.body.tanggalLahir,
-        alamatEmail: req.body.alamatEmail,
-        noHp: req.body.noHp,
+        namaLengkap: req.body.dataDiri.namaLengkap,
+        jenisKelamin: req.body.dataDiri.jenisKelamin,
+        kewarganegaraan: req.body.dataDiri.kewarganegaraan,
+        tempatKotaLahir: req.body.dataDiri.tempatKotaLahir,
+        tanggalLahir: req.body.dataDiri.tanggalLahir,
+        alamatEmail: req.body.dataDiri.alamatEmail,
+        noHp: req.body.dataDiri.noHp,
       },
       berkasAdministrasi: {
-        fotoCopyKartuKeluarga: req.body.fotoCopyKartuKeluarga,
-        fotoCopyIjazah: req.body.fotoCopyIjazah,
-        fotoCopyPrestasi: req.body.fotoCopyPrestasi,
-        pasFoto: req.body.pasFoto,
+        fotoCopyKartuKeluarga:req.body.berkasAdministrasi.fotoCopyKartuKeluarga,
+        fotoCopyIjazah:req.body.berkasAdministrasi.fotoCopyIjazah,
+        fotoCopyPrestasi:req.body.berkasAdministrasi.fotoCopyPrestasi,
+        fotoCopyUAN:req.body.berkasAdministrasi.fotoCopyUAN,
+        pasFoto:req.body.berkasAdministrasi.pasFoto,
       },
       infoSeleksi:{
-        tanggalSeleksi:req.body.tanggalSeleksi,
-        buktiPembayaranSeleksi: req.body.buktiPembayaranSeleksi,
-        statusPembarayanSeleksi: req.body.statusPembarayanSeleksi,
-        statusPenerimaanSeleksi: req.body.statusPenerimaanSeleksi,
-        prodi:req.body.prodi
+        tanggalSeleksi:req.body.infoSeleksi.tanggalSeleksi,
+        buktiPembayaranSeleksi:req.body.infoSeleksi.buktiPembayaranSeleksi,
+        statusPembayaranSeleksi: req.body.infoSeleksi.statusPembayaranSeleksi,
+        statusPenerimaanSeleksi: req.body.infoSeleksi.statusPenerimaanSeleksi,
+        prodi:req.body.infoSeleksi.prodi
       },
       daftarUlang: {
-        buktiPembayaranDaftarUlang: req.body.buktiPembayaranDaftarUlang,
-        statusPembayaranDaftarUlang:req.body.statusPembayaranDaftarUlang
+        buktiPembayaranDaftarUlang: req.body.daftarUlang.buktiPembayaranDaftarUlang,
+        statusPembayaranDaftarUlang: req.body.daftarUlang.statusPembayaranDaftarUlang
       },
       tanggalRegistrasi:new Date().toLocaleString(),
     }
   )
 
-  res.status(200).json(biodata);
+  res.status(200).json(studentData);
 })
 
 
@@ -100,4 +104,4 @@ module.exports = {
   getStudentData,
   setStudentData,
   updateStudentData,
-}
+};
