@@ -157,8 +157,14 @@ export default function BerkasAdministrasi(){
         "Authorization": `Bearer ${token}`
       }
     }
-    const res = await axios.post("/api/berkas-adm",fd,config)
-    if(res.status===200) toast.success("Data have been saved!")
+    try {
+      const res = await axios.post("/api/berkas-adm",fd,config)
+      toast.success("Data have been saved!")
+    } catch (err: any){
+      toast.error(err.response.data)
+      console.log(err.response.data)
+    }
+    // else if(res.status===500) toast.error(res.response.message+res.statusText)
   }
 
 
@@ -187,6 +193,11 @@ export default function BerkasAdministrasi(){
 
 
   // view
+  if(isLoading){
+    return (
+      <h1>Loading...</h1>
+    )
+  }
   return (
     <div style={{backgroundColor:"#FBF8F1"}}>
       <Container>

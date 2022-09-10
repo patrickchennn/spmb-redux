@@ -12,7 +12,25 @@ connectDB()
 const app = express()
 const port = process.env.PORT
 const storage = multer.memoryStorage()
-const upload = multer({storage})
+
+const uploadFilter = (req,file,cb)=>{
+  const fileType = file.mimetype
+  const fileName = file.originalname
+  const fileExtention = fileName.substr(fileName.lastIndexOf('.') + 1);
+  console.log(fileType)
+  if(fileType!=="image/jpeg" && fileType!=="image/gif" && fileType!=="image/png")
+  {
+    const errMsg = `Only images are allowed. File ${fileName} with extention ${fileExtention} is not allowed`
+    req.fileValidationError = errMsg
+    return cb(null,false,new Error(errMsg))
+  }
+  cb(null,true)
+}
+
+const upload = multer({
+  storage,
+  fileFilter: uploadFilter,
+})
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -28,19 +46,14 @@ app.use(errorHandler)
 app.post(
   "/api/berkas-adm",
   protect,
-  // upload.single("berkasAdministrasi")
-  // upload.array("berkasAdministrasi",5)
-  // upload.fields([
-  //   {name: "berkasAdministrasi",maxCount:5}
-  // ])
   upload.fields([
     {name: "fotoCopyKartuKeluarga", maxCount: 1},
     {name: "fotoCopyIjazah", maxCount: 1},
     {name: "fotoCopyPrestasi", maxCount: 1},
     {name: "fotoCopyUAN", maxCount: 1},
     {name: "pasFoto", maxCount: 1},
-  ])
-  ,async (req,res) => {
+  ]),
+  async (req,res) => {
     const finalBerkasAdm = {
       berkasAdministrasi: {
         fotoCopyKartuKeluarga:"",
@@ -50,7 +63,10 @@ app.post(
         pasFoto:"",
       }
     }
-
+    if(req.fileValidationError){
+      res.status(400).json(req.fileValidationError)
+      return
+    }
     const berkasAdm = req.files
     console.log("req.body: ", req.body)
     console.log(berkasAdm)
@@ -71,9 +87,9 @@ app.post(
       // {new:true}
     )
     res.status(200).json(updatedStudentData);
-    // res.status(200).json("ye");
+
+    // res.status(200).json("ye")
   }
 )
 
-app.listen(port,console.log(`\napp running on http://localhost:${port}`));
-
+app.listen(port,console.log(`\napp running on http://localhost:${port}`))
