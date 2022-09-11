@@ -8,24 +8,26 @@ import {register,reset as resetAuthState} from "../features/auth/authSlice";
 import { useAppDispatch,useAppSelector } from '../app/hooks';
 import {createStudentDataDefault} from "../features/student-data/studentDataSlice"
 
-const Register = () => {
+interface UserData {
+  name: string,
+  email: string,
+  password:string,
+  confirmPassword:string,
+}
+
+export default function Register(){
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
 
-  // select a state namely "auth"
+  // select a redux state namely "auth"
   const {user,isLoading,isError,isSuccess,message} = useAppSelector(state => state.auth)
 
-  // if the confirmation password reference DOM
+  // the confirmation password DOM element reference
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
 
   // user data form
-  interface UserData {
-    name: string,
-    email: string,
-    password:string,
-    confirmPassword:string,
-  }
+
   const [userData,setUserData] = useState<UserData>({
     name:"",email:"",password:"",confirmPassword:""
   });
@@ -142,7 +144,5 @@ const Register = () => {
         </Row>
       </Container>
     </div>
-  );
-};
-
-export default Register;
+  )
+}

@@ -11,24 +11,48 @@ import {AiOutlineDelete} from "react-icons/ai"
 import { deleteAccount } from '../../features/auth/authSlice'
 import { toast } from 'react-toastify'
 import {useEffect} from "react"
+import jwt_decode from "jwt-decode";
+
+interface DecodedToken{
+  exp: number,
+  iat: number
+  id: string,
+}
 
 export default function SpmbForm(){
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const {user,message} = useAppSelector(state =>  state.auth)
+  const {user} = useAppSelector(state => state.auth)
+  const {isSuccess,isError,message} = useAppSelector(state => state.studentData)
+
   useEffect(() => {
-    console.log('USE EFFECT!')
-    if(message) toast.success(message)
-  }, [message])
+    console.log('USE EFFECT 1!')
+    const decodedToken: DecodedToken = jwt_decode(user!.token)
+    console.log("Decoded Token: ", decodedToken)
+    const currentTime = new Date().getTime()
+    console.log("Current Time: ", currentTime)
+    console.log(decodedToken.exp*1000<currentTime)
+    
+    if(decodedToken.exp*1000<currentTime){
+      toast.error("Please re-login. JWT token is expired. Your session is done")
+      console.log("Token expired.")
+      handleLogout(false)
+    }
+  },[])
+
+  useEffect(() => {
+    console.log('USE EFFECT 2!')
+    if(isSuccess) toast.success(message)
+  }, [message,isSuccess])
 
 
 
-  function handleLogout(noNeedToConfirm=true){
+  async function handleLogout(noNeedToConfirm=true){
     if(noNeedToConfirm){
       if(!window.confirm(`Logout: ${user!.email}?`)) return
     }
-    dispatch(logout())
+    await dispatch(logout())
     dispatch(resetAuthState())
     navigate("/login",{replace:true})
   }

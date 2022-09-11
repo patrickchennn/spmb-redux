@@ -17,6 +17,7 @@
     "buffer": "^6.0.3",
     "buffer-from": "^1.1.2",
     "dotenv": "^16.0.2",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
     "react-datepicker": "^4.8.0",
