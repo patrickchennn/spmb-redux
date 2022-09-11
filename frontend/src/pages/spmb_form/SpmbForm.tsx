@@ -24,8 +24,10 @@ export default function SpmbForm(){
 
 
 
-  function handleLogout(){
-    if(!window.confirm(`Logout: ${user!.email}?`)) return
+  function handleLogout(noNeedToConfirm=true){
+    if(noNeedToConfirm){
+      if(!window.confirm(`Logout: ${user!.email}?`)) return
+    }
     dispatch(logout())
     dispatch(resetAuthState())
     navigate("/login",{replace:true})
@@ -36,7 +38,7 @@ export default function SpmbForm(){
     console.log("delete account");
     const {token} = JSON.parse(localStorage.getItem("user")!)
     await dispatch(deleteAccount(token))
-    handleLogout()
+    handleLogout(false)
   }
 
   // views
@@ -96,7 +98,7 @@ export default function SpmbForm(){
           <Col>
             <h5>LOGOUT</h5>
             <i className="bi bi-5-circle fs-2"></i>
-            <IoLogOutOutline onClick={handleLogout} style={{width:"150px",height:"150px",cursor:"pointer"}}/>
+            <IoLogOutOutline onClick={()=>handleLogout()} style={{width:"150px",height:"150px",cursor:"pointer"}}/>
           </Col>
           <Col>
             <h5>DELETE ACCOUNT</h5>

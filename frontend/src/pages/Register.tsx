@@ -14,10 +14,7 @@ const Register = () => {
 
 
   // select a state namely "auth"
-  const {user,isLoading,isError,isSuccess,message} = useAppSelector(state => {
-    console.log(state);
-    return state.auth;
-  });
+  const {user,isLoading,isError,isSuccess,message} = useAppSelector(state => state.auth)
 
   // if the confirmation password reference DOM
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
@@ -100,10 +97,9 @@ const Register = () => {
       <Container>
         <Row className="p-sm-0 py-5 px-3">
           <Col className="d-sm-block d-none">
-            {/* can put product,hero,logo,or anything in here... */}
+            {/* can put anything in here such as product,hero,logo,sponsor, ... */}
           </Col>
-          <Col className="px-3 py-4" style={{
-            borderRadius:"10px",
+          <Col className="px-3 py-4 rounded-2" style={{
             backgroundColor:"white",
             boxShadow:"0px 0px 5px black",
           }}>
