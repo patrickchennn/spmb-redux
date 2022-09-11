@@ -22,13 +22,13 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
     infoSeleksi:{
       tanggalSeleksi: new Date().toLocaleDateString('en-CA'),
       buktiPembayaranSeleksi:"",
-      statusPembayaranSeleksi:false,
+      statusPembayaranSeleksi:"diproses",
       statusPenerimaanSeleksi:false,
       prodi:""
     },
     daftarUlang: {
       buktiPembayaranDaftarUlang: "",
-      statusPembayaranDaftarUlang: false
+      statusPembayaranDaftarUlang: "diproses"
     },
     tanggalRegistrasi:new Date().toLocaleString(),
   }

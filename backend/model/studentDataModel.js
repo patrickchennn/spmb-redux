@@ -59,7 +59,7 @@ const studentDataSchema = new mongoose.Schema(
           data: Buffer,
           mimetype: String, default:""
       },
-      statusPembayaranSeleksi:Boolean,
+      statusPembayaranSeleksi:String,
       statusPenerimaanSeleksi:Boolean,
       prodi:{type:String, default:""}
     },
@@ -69,7 +69,7 @@ const studentDataSchema = new mongoose.Schema(
         data: Buffer,
         mimetype: String, default:""
       },
-      statusPembayaranDaftarUlang: Boolean
+      statusPembayaranDaftarUlang: String
     },
     tanggalRegistrasi:{type: String, default: new Date().toLocaleString()},
   },
