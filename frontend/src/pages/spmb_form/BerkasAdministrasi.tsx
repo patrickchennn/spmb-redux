@@ -1,17 +1,14 @@
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
-import { Container,Row,Col,Button,Form,Table,Badge } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import {BsChevronDoubleLeft} from "react-icons/bs"
-import {MdOutlineSaveAlt} from 'react-icons/md'
-import {useState} from "react"
+import { Container,Row,Col,Form,Table,Badge } from 'react-bootstrap'
+import {useState,useEffect} from 'react'
 import ShowBerkas from '../../components/ShowBerkas'
 import FormBerkas from '../../components/FormBerkas'
 import axios from 'axios'
 import { useAppDispatch,useAppSelector } from '../../app/hooks'
 import { getStudentData, reset as resetStudentDataState } from '../../features/student-data/studentDataSlice'
-import {useEffect} from "react"
 import { toast } from 'react-toastify'
 import { Buffer } from 'buffer';
+import SubmitNBackBtn from '../../components/SubmitNBackBtn'
 
 type FormDataType = {
   lastModified: number,
@@ -129,7 +126,7 @@ export default function BerkasAdministrasi(){
       }
 
       // this is for dynamic image file type. I.E. the image is not only an jpg. It can be a png also
-      let fileType;
+      let fileType: string;
 
       //  if berkasAdm is from the database(old)
       if((berkasAdm[key as KeyBerkasAdm] as FormDataType).type === undefined){
@@ -316,15 +313,7 @@ export default function BerkasAdministrasi(){
                   </div>
                 </div>
 
-                <div className="d-flex gap-3" style={{height:"fit-content"}}>
-                  <Link to="/spmb-form" className="btn btn-secondary">
-                    <BsChevronDoubleLeft /> BACK
-                  </Link>
-                  
-                  <Button variant="success" type="submit">
-                    <MdOutlineSaveAlt /> SAVE
-                  </Button>
-                </div>
+                <SubmitNBackBtn />
               </div>
             </Col>
 

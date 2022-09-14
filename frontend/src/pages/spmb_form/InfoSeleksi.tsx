@@ -1,70 +1,229 @@
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
-import { Container,Row,Col,Accordion,Form,Button,Badge,Card } from 'react-bootstrap'
-import {BsUpload,BsTrash} from "react-icons/bs";
-import {AiOutlineDownload} from "react-icons/ai"
+import { Container,Row,Col,Accordion,Form,Button,Card } from 'react-bootstrap'
+import {BsUpload,BsTrash} from 'react-icons/bs';
+import {AiOutlineDownload} from 'react-icons/ai'
+import React, {useState,useRef, useEffect} from 'react'
+import VisiMisi from '../../components/VisiMisi';
+import ShowBerkas from '../../components/ShowBerkas'
+import SubmitNBackBtn from '../../components/SubmitNBackBtn';
+import axios from 'axios'
+import { useAppDispatch,useAppSelector } from '../../app/hooks'
+import { getStudentData, reset as resetStudentDataState } from '../../features/student-data/studentDataSlice'
+import StatusAcceptance from "../../components/StatusAcceptance"
+import {toast} from 'react-toastify'
+import { Buffer } from 'buffer';
+
+
+interface BuktiPembayaranSeleksi{
+  previewImg:{
+    name:string,
+    url:string
+  },
+  file: string|File
+}
+interface InfoSeleksiData{
+  prodi: string,
+  tanggalUjian: string,
+  statusPembayaranSeleksi: string,
+  statusPenerimaanSeleksi: string,
+}
+
+
+
+
 export default function InfoSeleksi(){
+  const dispatch = useAppDispatch()
+  useAppSelector(state => console.log(state))
+  const {isError,isLoading,isSuccess,message} = useAppSelector(state => state.studentData)
 
-  function handleChangeBerkas(){
+  const buktiPembayaranSeleksiRef = useRef<HTMLInputElement|null>(null)
+  const [fotoPeserta,setFotoPeserta] = useState("")
+  const [namaLengkap,setNamaLengkap] = useState("")
 
+  const [infoSeleksiData,setInfoSeleksiData] = useState<InfoSeleksiData>({
+    prodi:"",
+    tanggalUjian:"",
+    statusPembayaranSeleksi:"",
+    statusPenerimaanSeleksi:"",
+  })
+  const [buktiPembayaranSeleksi,setBuktiPembayaranSeleksi] = useState<BuktiPembayaranSeleksi>({
+    previewImg:{name:"", url:""},
+    file:""
+  })
+
+
+  async function handleSubmit(e: React.SyntheticEvent){
+    e.preventDefault()
+    const {token} = JSON.parse(localStorage.getItem("user")!)
+    console.log("infoSeleksiData to be submitted: ", infoSeleksiData, buktiPembayaranSeleksi)
+
+    const fd = new FormData()
+    fd.append("infoSeleksi",JSON.stringify(infoSeleksiData))
+
+      // if the user did upload any image
+      if(
+        buktiPembayaranSeleksi.file
+      ){
+        fd.append(
+          "buktiPembayaranSeleksi",
+          buktiPembayaranSeleksi.file,
+          (buktiPembayaranSeleksi.file as File).name
+        )
+      }else{
+        fd.append("buktiPembayaranSeleksi","")
+      }
+
+    const config = {
+      headers:{
+        "Content-Type": "multipart/form-data",
+        "Authorization": `Bearer ${token}`
+      }
+    }
+    try {
+      await axios.post("/api/info-seleksi",fd,config)
+      toast.success("Data have been saved!")
+    } catch (err: any) {
+      // console.log(err)
+      toast.error(err.response.data)
+    }
   }
-  
+
+  function handleChangeBuktiPembayaran(selectedProperty: string){
+    console.log(selectedProperty)
+    buktiPembayaranSeleksiRef.current!.value = ""
+    setBuktiPembayaranSeleksi({
+      file:"",
+      previewImg:{name:"",url:""}
+    })
+  }
+
+  function handleChange(e: React.SyntheticEvent){
+    const target = e.target as HTMLInputElement
+    const id: string = target.id
+    console.log(id,target.value)
+    if(id==="buktiPembayaranSeleksi"){
+      setBuktiPembayaranSeleksi({
+        file: target.files![0],
+        previewImg: {
+          name:target.files![0].name,
+          url: URL.createObjectURL(target.files![0])
+        }
+      })
+      return
+    }
+
+    setInfoSeleksiData(prev => ({
+      ...prev,
+      [id]: target.value
+    }))
+  }
+
+  async function fetchStudentData(){
+    const response = await dispatch(getStudentData())
+    const {infoSeleksi} = response.payload
+    for(const key in infoSeleksi){
+      if(key==="buktiPembayaranSeleksi"){
+        const {mimetype} = infoSeleksi[key]
+        const imageArrayBuffer = infoSeleksi[key].data.data
+        const toBuffer = new (Buffer as any).from(imageArrayBuffer)
+        const toBlob = new Blob([toBuffer], {type:mimetype})
+        console.log(toBlob)
+        setBuktiPembayaranSeleksi({
+          file: "",
+          previewImg: {
+            name:infoSeleksi[key].name,
+            url:URL.createObjectURL(toBlob)
+          }
+        })
+        continue
+      }
+
+      setInfoSeleksiData(prev => ({
+        ...prev,
+        [key]: infoSeleksi[key]
+      }))
+      const blob = toBlob(response.payload.berkasAdministrasi.pasFoto)
+      if(blob!==null){
+        setFotoPeserta(URL.createObjectURL(blob))
+      }
+      setNamaLengkap(response.payload.dataDiri.namaLengkap)
+    }
+    console.log("fetchStudentData(): ", response)
+  }
+  function toBlob(file: any){
+    if(!file) return null
+    const {mimetype} = file
+    const imageArrayBuffer = file.data.data
+    const toBuffer = new (Buffer as any).from(imageArrayBuffer)
+    const blob = new Blob([toBuffer], {type:mimetype})
+    return blob
+  }
+  useEffect(() => {
+    console.log("USE EFFECT 1!")
+    fetchStudentData()
+    return ()=>{
+      console.log("CLEAN UP 1!")
+      resetStudentDataState()
+    }
+  },[])
+
+  useEffect(() => {
+    console.log("USE EFFECT 2!")
+    if(isError) toast.error(message)
+    if(isSuccess) toast.success(message)
+
+    return () => {
+      console.log("CLEAN UP 2!");
+      dispatch(resetStudentDataState())
+    }
+  }, [message,isError,isLoading,isSuccess])
+
+
+
+
+
+
+
+
+
+
+
+  if(isLoading){
+    return (
+      <h1>Loading...</h1>
+    )
+  }
   return (
     <div style={{padding:"0 0 5rem 0",backgroundColor:"rgb(251, 248, 241)"}}>
       <Container>
         <Row>
-          <LangkahPendaftaranNav />    
+          <LangkahPendaftaranNav />
         </Row>
 
         <Row>
           <Col className="col-8">
-            <Accordion defaultActiveKey={['0']} alwaysOpen>
-              <Form>
+            <Accordion activeKey={['1','0']} alwaysOpen>
+
+              <Form onSubmit={handleSubmit} method="POST" action="/api/berkas-adm" encType="multipart/form-data">
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>Langkah 1</Accordion.Header>
                   <Accordion.Body>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                      <Form.Label>
-                        <h5>
-                          Pilihan prodi:
-                        </h5>
-                      </Form.Label>
-                      <Form.Select>
-                        <option>Default select</option>
-                        <option value="ilmuTeologi">Ilmu Teologi</option>
-                        <option value="teknikInformatika">Teknik Informatika</option>
-                        <option value="ilmuFIlsafat">Ilmu FIlsafat</option>
+                    <Form.Group className="mb-3" controlId="prodi">
+                      <Form.Label><h5>Pilihan prodi:</h5></Form.Label>
+                      <Form.Select onChange={handleChange} name="prodi">
+                        <option value="" selected disabled hidden>{infoSeleksiData.prodi}</option>
+                        <option value="Ilmu Teologi">Ilmu Teologi</option>
+                        <option value="Teknik Informatika">Teknik Informatika</option>
+                        <option value="Ilmu Filsafat">Ilmu Filsafat</option>
                       </Form.Select>
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                      <Form.Label>
-                        <h5>
-                          Tanggal ujian:
-                        </h5>
-                      </Form.Label>
-                      <Form.Select>
-                        <option>Default select</option>
-                        <option value="Besok">Besok</option>
-                        <option value="Lusa">Lusa</option>
-                        <option value="Malam ini dah">Malam ini dah</option>
-                      </Form.Select>
+                    <Form.Group controlId="tanggalUjian" className="mb-3" >
+                      <Form.Label><h5>Tanggal ujian:</h5></Form.Label>
+                      <Form.Control onChange={handleChange} min={new Date().toLocaleDateString('en-ca')} value={infoSeleksiData.tanggalUjian} type="date" />
                     </Form.Group>
-                    <div>
-                      <h5>Visi & misi jurusan x</h5>
-                      <div>
-                        <h6 className="text-secondary">Visi</h6>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi totam sequi autem est necessitatibus, illo non et, quibusdam excepturi atque enim officia sapiente id tenetur mollitia. Iusto minima quam a similique laborum fugiat repudiandae consequuntur vitae ad temporibus dicta tempore, dolorem dolore recusandae cupiditate id porro quasi facere cum doloremque?
-                        </p>
-                      </div>
-                      <div>
-                        <h6 className="text-secondary">Misi</h6>
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi totam sequi autem est necessitatibus, illo non et, quibusdam excepturi atque enim officia sapiente id tenetur mollitia. Iusto minima quam a similique laborum fugiat repudiandae consequuntur vitae ad temporibus dicta tempore, dolorem dolore recusandae cupiditate id porro quasi facere cum doloremque?
-                        </p>
-                      </div>
-                    </div>
 
+                    <VisiMisi pilihanProdi={infoSeleksiData.prodi}/>
                   </Accordion.Body>
                 </Accordion.Item>
 
@@ -72,28 +231,33 @@ export default function InfoSeleksi(){
                   <Accordion.Header>Langkah 2: Pembayaran</Accordion.Header>
                   <Accordion.Body>
                     <h5>Bukti pembayaran</h5>
-                    <h6 className="text-mute"></h6>
-                    <Form.Group controlId="formFile" className="mb-3">
+                    <Form.Group controlId="buktiPembayaranSeleksi" className="mb-3">
                       <Form.Label className="btn btn-light rounded-0 rounded-start" style={{backgroundColor:"#e3e3e3"}}>
                         <BsUpload />
                       </Form.Label>
 
                       <Form.Label className="w-50 btn btn-light rounded-0">
-                        No file chosen
+                        {
+                        buktiPembayaranSeleksi.previewImg.name ?
+                          buktiPembayaranSeleksi.previewImg.name 
+                          : 
+                          "-"
+                        }
                       </Form.Label>
-                      <Button onClick={handleChangeBerkas} className="mb-2 rounded-0 rounded-end" variant='danger'><BsTrash /></Button>
-                      <Badge bg='warning' className="ms-2">Diproses</Badge>
 
-                      <Form.Control className="d-none" type="file" />
-                      <Form.Text className="m-0 text-muted d-block">
-                        Rp.300000,00
-                      </Form.Text>
+                      <Button onClick={()=>handleChangeBuktiPembayaran("buktiPembayaranSeleksi")} className="me-3 mb-2 rounded-0 rounded-end" variant='danger'><BsTrash /></Button>
+
+                      <StatusAcceptance status={infoSeleksiData.statusPembayaranSeleksi}/>
+
+                      <Form.Control ref={buktiPembayaranSeleksiRef} onChange={handleChange} className="d-none" name="buktiPembayaranSeleksi" type="file" />
+                      <Form.Text className="m-0 text-muted d-block">Rp.300000,00</Form.Text>
                     </Form.Group>
-
-                    <Button variant="success" type="submit">
-                      Save
-                    </Button>
-                    <h5>Status Kelulusan: <Badge bg='secondary'>?</Badge></h5>
+                    <ShowBerkas 
+                      imgSrc={buktiPembayaranSeleksi.previewImg.url} 
+                      imgName={buktiPembayaranSeleksi.previewImg.name}
+                    />
+                    <SubmitNBackBtn />
+                    <h5>Status Kelulusan: <StatusAcceptance status={infoSeleksiData.statusPenerimaanSeleksi}/></h5>
                   </Accordion.Body>
                 </Accordion.Item>
               </Form>
@@ -115,22 +279,24 @@ export default function InfoSeleksi(){
 
           <Col>
             <Card style={{ width: '18rem' }}>
-              <Card.Img variant="top" src="https://picsum.photos/200/200" />
+              {
+                fotoPeserta ?  
+                  <Card.Img variant="top" src={fotoPeserta} alt="foto peserta ujian"/>
+                  :
+                  <h5 className="text-danger">Foto belum diupload</h5>
+              }
               <Card.Body>
-                <Card.Title className="mb-1">Kartu Ujian</Card.Title>
+                <Card.Title className="mb-1">{namaLengkap}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Id: 123123123</Card.Subtitle>
-                <Card.Text>
+                <div className="mb-3">
                   <div>
-                    Prodi:
+                    Prodi: {infoSeleksiData.prodi}
                   </div>
                   <div>
-                    Tanggal registrasi:
+                    Tanggal ujian: {infoSeleksiData.tanggalUjian}
                   </div>
-                  <div>
-                    Tanggal ujian:
-                  </div>
-                </Card.Text>
-                <Button variant="primary"><AiOutlineDownload/> Cetak</Button>
+                </div>
+                <Button variant="primary"><AiOutlineDownload/> Cetak Kartu Ujian</Button>
               </Card.Body>
             </Card>
           </Col>
@@ -139,8 +305,3 @@ export default function InfoSeleksi(){
     </div>
   )
 }
-/*
-Quod modus dissentias nam id. Est ut unum vulputate mediocritatem. Eu animal aliquam pro, vim te tacimates atomorum. Erat gubergren mea ne, ea tale purto impetus quo.Te nihil decore sea. Nemore cetero eum id, usu eu inermis fastidii instructior, ius ei diam mundi nostrum. Iudico dolore offendit ea nec, pro in ridens sensibus, vix maluisset aliquando in. Alienum splendide gloriatur duo at, tibique sapientem cu mel.
-
-Id usu prima diceret consulatu. Ut esse albucius accusata mei. Eu est nostrum temporibus. Ei augue expetendis intellegebat mea, elaboraret persequeris ea sit, elaboraret voluptatibus vix ad. Illud harum audiam mel ea, ius ne ocurreret sententiae, brute commune qui at. Has ludus saepe neglegentur ne, eos cibo consul ut. Case apeirian constituam ne sea, ferri explicari et per.
-*/

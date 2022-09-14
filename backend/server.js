@@ -7,6 +7,7 @@ const connectDB = require("./config/db.js")
 const multer = require("multer")
 const { protect } = require('./middleware/authMiddleware.js')
 const studentDataModel = require("./model/studentDataModel.js")
+const { json } = require('body-parser')
 
 connectDB()
 const app = express()
@@ -92,4 +93,41 @@ app.post(
   }
 )
 
-app.listen(port,console.log(`\napp running on http://localhost:${port}`))
+
+app.post(
+  "/api/info-seleksi",
+  protect,
+  upload.single("buktiPembayaranSeleksi"),
+  async (req,res) => {
+    console.log("req.body: ", req.body)
+    console.log(req.file)
+    const infoSeleksiFromClient = JSON.parse(req.body.infoSeleksi)
+    const { originalname,mimetype,buffer }  = req.file
+    const final = {
+      infoSeleksi:{
+        prodi: infoSeleksiFromClient.prodi,
+        tanggalUjian: infoSeleksiFromClient.tanggalUjian,
+        statusPembayaranSeleksi: infoSeleksiFromClient.statusPembayaranSeleksi,
+        statusPenerimaanSeleksi: infoSeleksiFromClient.statusPenerimaanSeleksi,
+        buktiPembayaranSeleksi: {
+          name: originalname,
+          mimetype,
+          data:buffer
+        }
+      }
+    }
+
+    console.log("FINAL info seleksi data to be submitted",final)
+    
+    const updatedStudentData = await studentDataModel.findByIdAndUpdate(
+      req.user._id.toString(),
+      final,
+      // [options.new=false] «Boolean» if true, return the modified document rather than the original
+      // {new:true}
+    )
+    res.status(200).json(updatedStudentData);
+    // res.status(200).json("ye")
+  }
+)
+
+app.listen(port,console.log(`\napp running on http://localhost:${port}`));

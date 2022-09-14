@@ -7,12 +7,11 @@ export default function ShowBerkas({imgSrc,imgName}: ShowBerkasProps){
     const target = e.target as HTMLInputElement
     console.log("zoom in dah")
   }
-  // console.log(imgName)
   return (
     <>
       {
         imgSrc &&
-        <div className='d-flex justify-content-center'>
+        <div className='mb-3 d-flex justify-content-center'>
           <img 
             onClick={handleZoomPicture} 
             style={{cursor:"zoom-in"}} 
