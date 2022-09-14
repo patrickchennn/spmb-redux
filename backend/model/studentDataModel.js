@@ -53,14 +53,14 @@ const studentDataSchema = new mongoose.Schema(
       },
     },
     infoSeleksi:{
-      tanggalSeleksi:{type: String,default: new Date().toLocaleDateString('en-CA')},
+      tanggalUjian:{type: String,default: ""},
       buktiPembayaranSeleksi: {
           name: String,
           data: Buffer,
           mimetype: String, default:""
       },
-      statusPembayaranSeleksi:Boolean,
-      statusPenerimaanSeleksi:Boolean,
+      statusPembayaranSeleksi:{type: String, default: 'diproses'},
+      statusPenerimaanSeleksi:{type: String, default: 'diproses'},
       prodi:{type:String, default:""}
     },
     daftarUlang: {
@@ -69,7 +69,7 @@ const studentDataSchema = new mongoose.Schema(
         data: Buffer,
         mimetype: String, default:""
       },
-      statusPembayaranDaftarUlang: Boolean
+      statusPembayaranDaftarUlang: {type: String, default: 'diproses'}
     },
     tanggalRegistrasi:{type: String, default: new Date().toLocaleString()},
   },

@@ -1,13 +1,12 @@
-import { Container,Row,Col,Button,Form,Nav } from 'react-bootstrap'
+import { Container,Row,Col,Form,Nav } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
-import {BsChevronDoubleLeft} from "react-icons/bs"
-import {AiOutlineSend} from "react-icons/ai"
 import {useState,useEffect,useRef} from "react"
 import { useAppDispatch,useAppSelector } from '../../app/hooks'
 import myIsAlpha from '../../features/myIsAlpha'
 import { toast } from 'react-toastify'
 import { updateStudentData,getStudentData,reset as resetStudentDataState } from '../../features/student-data/studentDataSlice'
+import SubmitNBackBtn from '../../components/SubmitNBackBtn'
 
 export default function Biodata(){
   const dispatch = useAppDispatch()
@@ -174,13 +173,8 @@ export default function Biodata(){
                 </Form.Group>
 
                 <Row>
-                  <Col className="d-flex gap-2">
-                    <Link to="/spmb-form" className='btn btn-secondary'>
-                      <BsChevronDoubleLeft /> BACK
-                    </Link>
-                    <Button variant="success" type="submit">
-                      <AiOutlineSend /> SAVE
-                    </Button>
+                  <Col>
+                    <SubmitNBackBtn />
                   </Col>
                 </Row>
               </Form>

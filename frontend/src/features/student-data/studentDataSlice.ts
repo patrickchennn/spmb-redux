@@ -20,15 +20,15 @@ const initialState = {
       pasFoto:"",
     },
     infoSeleksi:{
-      tanggalSeleksi: new Date().toLocaleDateString('en-CA'),
+      tanggalUjian: "",
       buktiPembayaranSeleksi: "",
-      statusPembayaranSeleksi:false,
-      statusPenerimaanSeleksi:false,
+      statusPembayaranSeleksi:"diproses",
+      statusPenerimaanSeleksi:"diproses",
       prodi:""
     },
     daftarUlang: {
       buktiPembayaranDaftarUlang: "",
-      statusPembayaranDaftarUlang: false
+      statusPembayaranDaftarUlang: "diproses"
     },
     tanggalRegistrasi:new Date().toLocaleString(),
   },
@@ -106,24 +106,13 @@ const createStudentDataDefault = createAsyncThunk(
   }
 )
 
-// Update student data
-interface BioData{
-  dataDiri:{
-    namaLengkap: string,
-    jenisKelamin: string,
-    kewarganegaraan: string,
-    tempatKotaLahir: string,
-    tanggalLahir: string,
-    alamatEmail: string,
-    noHp: string,
-  }
-}
+
 const updateStudentData = createAsyncThunk(
   "studentData/update",
-  async (bioData: BioData, thunkAPI) => {
+  async (studentData: any, thunkAPI) => {
     try {
       const {token,_id} = JSON.parse(localStorage.getItem("user")!)
-      return await studentDataService.updateStudentData(bioData, {token,id: _id})
+      return await studentDataService.updateStudentData(studentData, {token,id: _id})
     } catch (error: any) {
       const errMsg: string = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       return thunkAPI.rejectWithValue(errMsg);

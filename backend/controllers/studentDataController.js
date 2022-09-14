@@ -59,7 +59,7 @@ const setStudentData = asyncHandler(async (req,res) => {
         pasFoto:req.body.berkasAdministrasi.pasFoto,
       },
       infoSeleksi:{
-        tanggalSeleksi:req.body.infoSeleksi.tanggalSeleksi,
+        tanggalUjian:req.body.infoSeleksi.tanggalSeleksi,
         buktiPembayaranSeleksi:req.body.infoSeleksi.buktiPembayaranSeleksi,
         statusPembayaranSeleksi: req.body.infoSeleksi.statusPembayaranSeleksi,
         statusPenerimaanSeleksi: req.body.infoSeleksi.statusPenerimaanSeleksi,
@@ -91,10 +91,10 @@ const updateStudentData = asyncHandler(async (req,res) => {
     res.status(401);
     throw new Error(`${studentData.email} you are not allowed to modify other people data!`);
   }
+  console.log(req.body)
   const updatedStudentData = await studentDataModel.findByIdAndUpdate(
     id,
     req.body,
-    {new:true}
   )
   res.status(200).json(updatedStudentData);
 });

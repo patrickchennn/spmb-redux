@@ -20,15 +20,15 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
       pasFoto:"",
     },
     infoSeleksi:{
-      tanggalSeleksi: new Date().toLocaleDateString('en-CA'),
+      tanggalUjian: "",
       buktiPembayaranSeleksi:"",
-      statusPembayaranSeleksi:false,
-      statusPenerimaanSeleksi:false,
+      statusPembayaranSeleksi:"diproses",
+      statusPenerimaanSeleksi:"diproses",
       prodi:""
     },
     daftarUlang: {
       buktiPembayaranDaftarUlang: "",
-      statusPembayaranDaftarUlang: false
+      statusPembayaranDaftarUlang: "diproses"
     },
     tanggalRegistrasi:new Date().toLocaleString(),
   }
@@ -39,28 +39,17 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
     }
   }
   const response = await axios.post(API_URL,studentDataDefault,config)
-  console.log(response)
+  // console.log(response)
   return response.data
 }
 
-interface BioData{
-  dataDiri:{
-    namaLengkap: string,
-    jenisKelamin: string,
-    kewarganegaraan: string,
-    tempatKotaLahir: string,
-    tanggalLahir: string,
-    alamatEmail: string,
-    noHp: string,
-  }
-}
-const updateStudentData = async (bioData: BioData,{token,id}: {token:string,id:string}) => {
+const updateStudentData = async (studentData: any, {token,id}: {token:string,id:string}) => {
   const config = {
     headers: {
       "Authorization": `Bearer ${token}`
     }
   }
-  const response = await axios.put(API_URL+id, bioData,config)
+  const response = await axios.put(API_URL+id, studentData,config)
   return response.data
 }
 
