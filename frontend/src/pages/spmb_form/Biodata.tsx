@@ -122,7 +122,7 @@ export default function Biodata(){
           </Row>
 
           <Row>
-            <Col className="py-4 px-5 border border-2 border-secondary rounded" style={{backgroundColor:"#F7ECDE"}}>
+            <Col className="py-4 px-5 border border-2 border-secondary rounded" style={{backgroundColor:"white"}}>
               <Form onSubmit={handleSubmit}>
                 <h5>
                   Umum
@@ -185,7 +185,7 @@ export default function Biodata(){
               <div className="mt-5 mt-sm-0 p-4 border border-2 border-secondary rounded" style={{
                   boxShadow:"#d9d9d9 0px 0px 10px 0px",
                   height:"fit-content",
-                  backgroundColor:"#F7ECDE",
+                  backgroundColor:"white",
                 }}>
                 <Nav className="flex-column gap-2">
                   <Link to="#" className="text-start btn text-dark text-decoration-none">

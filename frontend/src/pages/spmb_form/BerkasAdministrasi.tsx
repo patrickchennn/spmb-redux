@@ -206,7 +206,7 @@ export default function BerkasAdministrasi(){
     )
   }
   return (
-    <div style={{backgroundColor:"#FBF8F1"}}>
+    <div style={{backgroundColor:"rgb(251, 248, 241)"}}>
       <Container>
         <Row>
           <Col>
@@ -217,7 +217,7 @@ export default function BerkasAdministrasi(){
         <Form onSubmit={handleSubmit} method="POST" action="/api/berkas-adm" encType="multipart/form-data">
           <Row>
             <Col className="col-8">
-              <Table striped bordered hover style={{backgroundColor: "rgb(247, 236, 222)"}}>
+              <Table striped bordered hover style={{backgroundColor: "white"}}>
                 <thead>
                   <tr>
                     <th className='fs-5'>Syarat</th>
