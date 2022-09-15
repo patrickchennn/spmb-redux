@@ -202,7 +202,7 @@ export default function InfoSeleksi(){
 
         <Row>
           <Col className="col-8">
-            <Accordion activeKey={['1','0']} alwaysOpen>
+            <Accordion defaultActiveKey={['0','1']} alwaysOpen className="border border-2 border-secondary rounded">
 
               <Form onSubmit={handleSubmit} method="POST" action="/api/berkas-adm" encType="multipart/form-data">
                 <Accordion.Item eventKey="0">
@@ -278,7 +278,7 @@ export default function InfoSeleksi(){
           </Col>
 
           <Col>
-            <Card style={{ width: '18rem' }}>
+            <Card className="border border-2 border-secondary rounded" style={{ width: '18rem' }}>
               {
                 fotoPeserta ?  
                   <Card.Img variant="top" src={fotoPeserta} alt="foto peserta ujian"/>

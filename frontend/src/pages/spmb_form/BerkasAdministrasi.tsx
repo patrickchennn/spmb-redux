@@ -217,7 +217,7 @@ export default function BerkasAdministrasi(){
         <Form onSubmit={handleSubmit} method="POST" action="/api/berkas-adm" encType="multipart/form-data">
           <Row>
             <Col className="col-8">
-              <Table striped bordered hover style={{backgroundColor: "white"}}>
+              <Table className="border border-2 border-secondary" striped bordered hover style={{backgroundColor: "white"}}>
                 <thead>
                   <tr>
                     <th className='fs-5'>Syarat</th>
