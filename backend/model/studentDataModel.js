@@ -65,11 +65,11 @@ const studentDataSchema = new mongoose.Schema(
     infoSeleksi:{
       tanggalUjian:{type: String,default: ""},
       buktiPembayaranSeleksi: {
-          name: String,
-          data: Buffer,
-          mimetype: String, default:""
+        name: String,
+        data: Buffer,
+        mimetype: String, default:"",
+        isAccepted: String,
       },
-      statusPembayaranSeleksi:{type: String, default: 'diproses'},
       statusPenerimaanSeleksi:{type: String, default: 'diproses'},
       prodi:{type:String, default:""}
     },
@@ -77,9 +77,10 @@ const studentDataSchema = new mongoose.Schema(
       buktiPembayaranDaftarUlang: {
         name: String,
         data: Buffer,
-        mimetype: String, default:""
+        mimetype: String, 
+        default:"",
+        isAccepted: String,
       },
-      statusPembayaranDaftarUlang: {type: String, default: 'diproses'}
     },
     tanggalRegistrasi:{type: String, default: new Date().toLocaleString()},
   },
