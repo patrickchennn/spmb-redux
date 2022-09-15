@@ -29,10 +29,10 @@ export default function SpmbForm(){
   useEffect(() => {
     console.log('USE EFFECT 1!')
     const decodedToken: DecodedToken = jwt_decode(user!.token)
-    console.log("Decoded Token: ", decodedToken)
+    // console.log("Decoded Token: ", decodedToken)
     const currentTime = new Date().getTime()
-    console.log("Current Time: ", currentTime)
-    console.log(decodedToken.exp*1000<currentTime)
+    // console.log("Current Time: ", currentTime)
+    // console.log(decodedToken.exp*1000<currentTime)
     
     if(decodedToken.exp*1000<currentTime){
       toast.error("Please re-login. JWT token is expired. Your session is done")

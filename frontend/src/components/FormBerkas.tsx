@@ -2,64 +2,59 @@ import { Form,Button } from "react-bootstrap"
 import {BsUpload,BsTrash} from "react-icons/bs";
 import {useRef} from "react"
 
-interface PreviewBerkas{
-  fotoCopyKartuKeluarga: string,
-  fotoCopyIjazah: string,
-  fotoCopyPrestasi: string,
-  fotoCopyUAN: string,
-  pasFoto: string,
-}
-interface FormDataType{
-  lastModified: number,
-  lastModifiedData:Date,
-  name: string,
-  size: number,
-  type: string,
-  webkitRelativePath: string,
-}
-interface BerkasAdmDatabaseVer{
+type BerkasAdmDatabaseVer = {
   name: string,
   mimetype: string,
   data: {
     type: string,
-    data:Buffer
+    data: Buffer
   }
+  isAccepted: string,
+}
+interface BerkasAdmChild {
+  previewImg:{
+    name:string,
+    url:string
+  },
+  file: string | File | BerkasAdmDatabaseVer,
+  isAccepted: string
 }
 interface BerkasAdm {
-  fotoCopyKartuKeluarga: string | FormDataType | BerkasAdmDatabaseVer,
-  fotoCopyIjazah: string | FormDataType | BerkasAdmDatabaseVer,
-  fotoCopyPrestasi: string | FormDataType | BerkasAdmDatabaseVer,
-  fotoCopyUAN: string | FormDataType | BerkasAdmDatabaseVer,
-  pasFoto: string | FormDataType | BerkasAdmDatabaseVer,
+  fotoCopyKartuKeluarga: BerkasAdmChild,
+  fotoCopyIjazah: BerkasAdmChild,
+  fotoCopyPrestasi: BerkasAdmChild,
+  fotoCopyUAN: BerkasAdmChild,
+  pasFoto: BerkasAdmChild,
 }
+
+
+
+
+
 interface FormBerkasProps{
   selectedProperty: string,
   berkasAdm: BerkasAdm,
   setBerkasAdm: React.Dispatch<React.SetStateAction<BerkasAdm>>,
-  setPreviewBerkas:React.Dispatch<React.SetStateAction<PreviewBerkas>>,
-  isRequired: boolean
 }
-
-
-
-
-
-export default function FormBerkas({selectedProperty,berkasAdm,setBerkasAdm,setPreviewBerkas,isRequired}: FormBerkasProps){
+export default function FormBerkas({selectedProperty,berkasAdm,setBerkasAdm}: FormBerkasProps){
   type KeyBerkasAdm = keyof typeof berkasAdm;
   const berkasInputRef = useRef<HTMLInputElement|null>(null)
 
-  const handleUpload = (e: React.SyntheticEvent) => {
+  const handleUploadBerkas = (e: React.SyntheticEvent) => {
     const target = e.target as HTMLInputElement
-    // berkasInputRef.current!.name = target.files![0].name
-    console.log(target.files![0])
+    const file: File = target.files![0]
+    console.log(file)
 
     setBerkasAdm(prev => ({
       ...prev,
-      [target.name]: target.files![0]
-    }))
-    setPreviewBerkas(prev => ({
-      ...prev,
-      [target.name]: URL.createObjectURL(target.files![0])
+      [target.name]: {
+        previewImg:{
+          name: file.name,
+          url: URL.createObjectURL(file)
+        },
+        file,
+        isAccepted:"diproses",
+      }
     }))
   }
 
@@ -67,11 +62,12 @@ export default function FormBerkas({selectedProperty,berkasAdm,setBerkasAdm,setP
     berkasInputRef.current!.value = ""
     setBerkasAdm(prev => ({
       ...prev,
-      [propertyToBeChanged]:''
-    }))
-    setPreviewBerkas(prev => ({
-      ...prev,
-      [propertyToBeChanged]:''
+      [propertyToBeChanged]:{
+        previewImg:{
+          name:"",url:""
+        },
+        file:"",
+      }
     }))
   }
 
@@ -83,8 +79,8 @@ export default function FormBerkas({selectedProperty,berkasAdm,setBerkasAdm,setP
       </Form.Label>
       <Form.Label className="w-50 btn btn-light rounded-0">
         {
-          berkasAdm[selectedProperty as KeyBerkasAdm] ? 
-            (berkasAdm[selectedProperty as KeyBerkasAdm] as BerkasAdmDatabaseVer | FormDataType).name :
+          berkasAdm[selectedProperty as KeyBerkasAdm].file ? 
+            berkasAdm[selectedProperty as KeyBerkasAdm].previewImg.name :
             "No file chosen"
         }
       </Form.Label>
@@ -94,7 +90,7 @@ export default function FormBerkas({selectedProperty,berkasAdm,setBerkasAdm,setP
             ref={berkasInputRef}
             className="d-none" 
             name={selectedProperty}
-            onChange={handleUpload}
+            onChange={handleUploadBerkas}
             type="file"
           />
       }
