@@ -29,27 +29,37 @@ const studentDataSchema = new mongoose.Schema(
       fotoCopyKartuKeluarga: {
         name: String,
         data: Buffer,
-        mimetype: String, default:""
+        mimetype: String,
+        isAccepted: String,
+        default:""
       },
       fotoCopyIjazah: {
         name: String,
         data: Buffer,
-        mimetype: String, default:""
+        mimetype: String,
+        isAccepted: String,
+        default:""
       },
       fotoCopyPrestasi: {
         name: String,
         data: Buffer,
-        mimetype: String, default:""
+        mimetype: String,
+        isAccepted: String,
+        default:""
       },
       fotoCopyUAN: {
         name: String,
         data: Buffer,
-        mimetype: String, default:""
+        mimetype: String,
+        isAccepted: String,
+        default:""
       },
       pasFoto: {
         name: String,
         data: Buffer,
-        mimetype: String, default:""
+        mimetype: String,
+        isAccepted: String,
+        default:""
       },
     },
     infoSeleksi:{
