@@ -68,28 +68,30 @@ app.post(
       res.status(400).json(req.fileValidationError)
       return
     }
-    const berkasAdm = req.files
+
     console.log("req.body: ", req.body)
-    console.log(berkasAdm)
-    Object.keys(berkasAdm).forEach(key => {
-      const {originalname,mimetype,buffer} = berkasAdm[key][0]
+    console.log(req.files)
+
+
+    Object.keys(req.files).forEach(key => {
+      const {originalname,mimetype,buffer} = req.files[key][0]
       finalBerkasAdm.berkasAdministrasi[key] = {
         name:originalname,
         mimetype,
-        data:buffer
+        data:buffer,
+        isAccepted: req.body[key],
       }
     })
 
     console.log("berkas adm to be send to database: ",finalBerkasAdm)
+    
     const updatedStudentData = await studentDataModel.findByIdAndUpdate(
       req.user._id.toString(),
       finalBerkasAdm,
-      // [options.new=false] «Boolean» if true, return the modified document rather than the original
-      // {new:true}
     )
     res.status(200).json(updatedStudentData);
 
-    // res.status(200).json("ye")
+    res.status(200).json("ye")
   }
 )
 
@@ -130,4 +132,4 @@ app.post(
   }
 )
 
-app.listen(port,console.log(`\napp running on http://localhost:${port}`));
+app.listen(port,console.log(`\napp running on http://localhost:${port}`))

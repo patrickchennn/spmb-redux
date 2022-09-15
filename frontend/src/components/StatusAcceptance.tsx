@@ -10,8 +10,11 @@ export default function StatusAcceptance({status}:{status: string}){
     case "ditolak":
       theChoosenOne = <Badge bg='danger'>Ditolak</Badge>
       break
-    default:
+    case "diproses":
       theChoosenOne = <Badge bg='warning'>Diproses</Badge>
+      break
+    default:
+      theChoosenOne = <Badge bg='secondary'>?</Badge>
       break
   }
 

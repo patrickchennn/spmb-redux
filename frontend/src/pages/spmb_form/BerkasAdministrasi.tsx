@@ -1,5 +1,5 @@
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
-import { Container,Row,Col,Form,Table,Badge } from 'react-bootstrap'
+import { Container,Row,Col,Form,Table } from 'react-bootstrap'
 import {useState,useEffect} from 'react'
 import ShowBerkas from '../../components/ShowBerkas'
 import FormBerkas from '../../components/FormBerkas'
@@ -9,15 +9,9 @@ import { getStudentData, reset as resetStudentDataState } from '../../features/s
 import { toast } from 'react-toastify'
 import { Buffer } from 'buffer';
 import SubmitNBackBtn from '../../components/SubmitNBackBtn'
+import StatusAcceptance from "../../components/StatusAcceptance"
 
-type FormDataType = {
-  lastModified: number,
-  lastModifiedData:Date,
-  name: string,
-  size: number,
-  type: string,
-  webkitRelativePath: string,
-}
+
 type BerkasAdmDatabaseVer = {
   name: string,
   mimetype: string,
@@ -25,45 +19,46 @@ type BerkasAdmDatabaseVer = {
     type: string,
     data: Buffer
   }
+  isAccepted: string
+}
+interface BerkasAdmChild {
+  previewImg:{
+    name:string,
+    url:string
+  },
+  file: string | File | BerkasAdmDatabaseVer,
+  isAccepted: string
 }
 interface BerkasAdm {
-  fotoCopyKartuKeluarga: string | BerkasAdmDatabaseVer | FormDataType,
-  fotoCopyIjazah: string | BerkasAdmDatabaseVer | FormDataType,
-  fotoCopyPrestasi: string | BerkasAdmDatabaseVer | FormDataType,
-  fotoCopyUAN: string | BerkasAdmDatabaseVer | FormDataType,
-  pasFoto: string | BerkasAdmDatabaseVer | FormDataType,
+  fotoCopyKartuKeluarga: BerkasAdmChild,
+  fotoCopyIjazah: BerkasAdmChild,
+  fotoCopyPrestasi: BerkasAdmChild,
+  fotoCopyUAN: BerkasAdmChild,
+  pasFoto: BerkasAdmChild,
 }
-interface PreviewBerkas{
-  fotoCopyKartuKeluarga: string,
-  fotoCopyIjazah: string,
-  fotoCopyPrestasi: string,
-  fotoCopyUAN: string,
-  pasFoto: string,
-}
-
 
 
 
 
 export default function BerkasAdministrasi(){
-  const [berkasAdm,setBerkasAdm] = useState<BerkasAdm>({
-    fotoCopyKartuKeluarga:"",
-    fotoCopyIjazah:"",
-    fotoCopyPrestasi:"",
-    fotoCopyUAN:"",
-    pasFoto:"",
-  })
-
-  const [previewBerkas,setPreviewBerkas] = useState<PreviewBerkas>({
-    fotoCopyKartuKeluarga:"",
-    fotoCopyIjazah:"",
-    fotoCopyPrestasi:"",
-    fotoCopyUAN:"",
-    pasFoto:"",
-  })
   const dispatch = useAppDispatch()
   const {isError,isLoading,isSuccess,message} = useAppSelector(state => state.studentData)
-
+  const mainState = {
+    previewImg:{
+      name:"",url:""
+    },
+    file:"",
+    isAccepted:"",
+  }
+  const [berkasAdm,setBerkasAdm] = useState<BerkasAdm>({
+    fotoCopyKartuKeluarga:mainState,
+    fotoCopyIjazah:mainState,
+    fotoCopyPrestasi:mainState,
+    fotoCopyUAN:mainState,
+    pasFoto:mainState,
+  })
+  const {fotoCopyKartuKeluarga,fotoCopyIjazah,fotoCopyPrestasi,fotoCopyUAN,pasFoto} = berkasAdm
+  type KeyBerkasAdm = keyof typeof berkasAdm;
 
 
 
@@ -72,89 +67,52 @@ export default function BerkasAdministrasi(){
     const response = await dispatch(getStudentData())
     console.log("server resposne: ",response)
     const berkasAdmDatabase = response.payload.berkasAdministrasi
-    setBerkasAdm({
-      ...berkasAdmDatabase
-    })
-    // console.log(berkasAdm)
 
-    // show images
+    let b: Blob | null;
     for(const key in berkasAdmDatabase){
-      // console.log(berkasAdmDatabase[key].data.data)
-      if(berkasAdmDatabase[key]){
-        const {mimetype} = berkasAdmDatabase[key]
-        // console.log(berkasAdmDatabase[key])
-
-        const imageArrayBuffer = berkasAdmDatabase[key].data.data
-        // console.log("imageArrayBuffer: ",imageArrayBuffer)
-
-        const toBuffer = new (Buffer as any).from(imageArrayBuffer)
-        // console.log("toBuffer: ",toBuffer)
-
-        // if we want to use base64 to represent the image
-        // https://stackoverflow.com/questions/8499633/how-to-display-base64-images-in-html
-        // `data:${mimetype};base64,${toB64}`
-        // const toB64 = toBuffer.toString('base64')
-        // console.log("toB64",toB64)
-
-        // if we want to use blob
-        const toBlob = new Blob([toBuffer], {type:mimetype})
-        // console.log("to Blob: ", toBlob)
-        // console.log(URL.createObjectURL())
-
-        setPreviewBerkas(prev => ({
-          ...prev,
-          [key]: URL.createObjectURL(toBlob)
-        }))
-      }
+      if(!berkasAdmDatabase[key]) continue
+      b = toBlob(berkasAdmDatabase[key])
+      setBerkasAdm(prev => ({
+        ...prev,
+        [key]:{
+          previewImg:{
+            name:berkasAdmDatabase[key].name,
+            url: URL.createObjectURL(b!)
+          },
+          file: b,
+          isAccepted: berkasAdmDatabase[key].isAccepted
+        }
+      }))
     }
+    console.log(berkasAdm)
+  }
+
+  function toBlob(file: any){
+    if(!file) return null
+    const {mimetype} = file
+    const imageArrayBuffer = file.data.data
+    const toBuffer = new (Buffer as any).from(imageArrayBuffer)
+    const blob = new Blob([toBuffer], {type:mimetype})
+    return blob
   }
 
   async function handleSubmit(e: React.SyntheticEvent){
+    e.preventDefault()
     // we will need a jwt token to update the data(Authorization)
     const {token} = JSON.parse(localStorage.getItem("user")!)
-    e.preventDefault()
     console.log("berkas administrasi to be submitted: ", berkasAdm)
-    console.log("preview berkas: ", previewBerkas)
     const fd = new FormData()
-    type KeyBerkasAdm = keyof typeof berkasAdm;
     for(const key in berkasAdm){
-      // if the user did not fill the form
-      if(!berkasAdm[key as KeyBerkasAdm]){
-        // then we just set empty string(default value)
-        fd.set(key,"")
+      if(!berkasAdm[key as KeyBerkasAdm].file) {
+        fd.append(key,"")
         continue
       }
-
-      // this is for dynamic image file type. I.E. the image is not only an jpg. It can be a png also
-      let fileType: string;
-
-      //  if berkasAdm is from the database(old)
-      if((berkasAdm[key as KeyBerkasAdm] as FormDataType).type === undefined){
-        fileType = (berkasAdm[key as KeyBerkasAdm] as BerkasAdmDatabaseVer).mimetype
-        
-        const imageArrayBuffer = (berkasAdm[key as KeyBerkasAdm] as BerkasAdmDatabaseVer).data.data
-        const toBuffer = new (Buffer as any).from(imageArrayBuffer)
-        const toBlob = new Blob([toBuffer], {type: fileType})
-        // console.log(toBlob)
-        fd.append(
-          key,
-          toBlob,
-          (berkasAdm[key as KeyBerkasAdm] as BerkasAdmDatabaseVer).name
-        )
-
-        // console.log(fileType)
-      }
-      // if it's not(new)
-      else{
-        fileType = (berkasAdm[key as KeyBerkasAdm] as FormDataType).type
-        
-        fd.append(
-          key,
-          berkasAdm[key as KeyBerkasAdm] as unknown as Blob,
-          (berkasAdm[key as KeyBerkasAdm] as FormDataType).name
-        )
-        // console.log(fileType)
-      }
+      fd.append(key,berkasAdm[key as KeyBerkasAdm].isAccepted)
+      fd.append(
+        key,
+        (berkasAdm[key as KeyBerkasAdm] as any).file,
+        berkasAdm[key as KeyBerkasAdm].previewImg.name
+      )
     }
 
     // console.table([...fd])
@@ -168,10 +126,9 @@ export default function BerkasAdministrasi(){
       await axios.post("/api/berkas-adm",fd,config)
       toast.success("Data have been saved!")
     } catch (err: any){
+      // console.log(err)
       toast.error(err.response.data)
-      console.log(err.response.data)
     }
-    // else if(res.status===500) toast.error(res.response.message+res.statusText)
   }
 
   useEffect(() => {
@@ -190,7 +147,7 @@ export default function BerkasAdministrasi(){
     if(isSuccess) toast.success(message)
 
     return () => {
-      console.log("CLEARN UP 2!");
+      console.log("CLEAN UP 2!");
       
       dispatch(resetStudentDataState())
     }
@@ -234,15 +191,15 @@ export default function BerkasAdministrasi(){
                         selectedProperty='fotoCopyKartuKeluarga' 
                         berkasAdm={berkasAdm} 
                         setBerkasAdm={setBerkasAdm} 
-                        setPreviewBerkas={setPreviewBerkas}
-                        isRequired={true}
                       />
                       <ShowBerkas 
-                        imgSrc={previewBerkas.fotoCopyKartuKeluarga} 
-                        imgName={(berkasAdm.fotoCopyKartuKeluarga as BerkasAdmDatabaseVer | FormDataType).name}
+                        imgSrc={fotoCopyKartuKeluarga.previewImg.url} 
+                        imgName={fotoCopyKartuKeluarga.previewImg.name}
                       />
                     </td>
-                    <td>status</td>
+                    <td>
+                      <StatusAcceptance status={fotoCopyKartuKeluarga.isAccepted} />
+                    </td>
                   </tr>
                   <tr>
                     <td>Fotocopy Ijazah<span className='text-danger'>*</span></td>
@@ -251,18 +208,14 @@ export default function BerkasAdministrasi(){
                         selectedProperty='fotoCopyIjazah' 
                         berkasAdm={berkasAdm} 
                         setBerkasAdm={setBerkasAdm} 
-                        setPreviewBerkas={setPreviewBerkas} 
-                        isRequired={true}
                       />
                       <ShowBerkas 
-                        imgSrc={previewBerkas.fotoCopyIjazah} 
-                        imgName={(berkasAdm.fotoCopyIjazah as BerkasAdmDatabaseVer | FormDataType).name}
+                        imgSrc={fotoCopyIjazah.previewImg.url} 
+                        imgName={fotoCopyIjazah.previewImg.name}
                       />
                     </td>
                     <td >
-                      <Badge pill bg="warning">
-                        Diproses
-                      </Badge>
+                      <StatusAcceptance status={fotoCopyIjazah.isAccepted} />
                     </td>
                   </tr>
                   <tr>
@@ -272,15 +225,15 @@ export default function BerkasAdministrasi(){
                         selectedProperty='fotoCopyPrestasi' 
                         berkasAdm={berkasAdm} 
                         setBerkasAdm={setBerkasAdm} 
-                        setPreviewBerkas={setPreviewBerkas}
-                        isRequired={false}
                       />
                       <ShowBerkas 
-                        imgSrc={previewBerkas.fotoCopyPrestasi} 
-                        imgName={(berkasAdm.fotoCopyPrestasi as BerkasAdmDatabaseVer | FormDataType).name}
+                        imgSrc={fotoCopyPrestasi.previewImg.url} 
+                        imgName={fotoCopyPrestasi.previewImg.name}
                       />
                     </td>
-                    <td>status</td>
+                    <td>
+                      <StatusAcceptance status={fotoCopyPrestasi.isAccepted} />
+                    </td>
                   </tr>
                   <tr>
                     <td>Fotocopy Nilai Ujian Akhir Nasional<sup className="text-secondary">opt</sup></td>
@@ -289,15 +242,15 @@ export default function BerkasAdministrasi(){
                         selectedProperty='fotoCopyUAN' 
                         berkasAdm={berkasAdm} 
                         setBerkasAdm={setBerkasAdm} 
-                        setPreviewBerkas={setPreviewBerkas} 
-                        isRequired={false}
                       />
                       <ShowBerkas 
-                        imgSrc={previewBerkas.fotoCopyUAN} 
-                        imgName={(berkasAdm.fotoCopyUAN as BerkasAdmDatabaseVer | FormDataType).name}
+                        imgSrc={fotoCopyUAN.previewImg.url} 
+                        imgName={fotoCopyUAN.previewImg.name}
                       />
                     </td>
-                    <td>status</td>
+                    <td>
+                      <StatusAcceptance status={fotoCopyUAN.isAccepted} />
+                    </td>
                   </tr>
                 </tbody>
               </Table>
@@ -319,16 +272,15 @@ export default function BerkasAdministrasi(){
 
             <Col>
               <h4 className="fw-bold">Pas foto<span className='text-danger'>*</span></h4>
+              <StatusAcceptance status={pasFoto.isAccepted} />
               <FormBerkas 
                   selectedProperty='pasFoto'
                   berkasAdm={berkasAdm}
                   setBerkasAdm={setBerkasAdm}
-                  setPreviewBerkas={setPreviewBerkas}
-                  isRequired={true}
                 />
               <ShowBerkas 
-                imgSrc={previewBerkas.pasFoto} 
-                imgName={(berkasAdm.pasFoto as BerkasAdmDatabaseVer | FormDataType).name}
+                imgSrc={pasFoto.previewImg.url} 
+                imgName={pasFoto.previewImg.name}
               />
             </Col>
           </Row>
