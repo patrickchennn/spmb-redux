@@ -66,10 +66,6 @@ const setStudentData = asyncHandler(async (req,res) => {
         prodi:req.body.infoSeleksi.prodi,
         idUjian:req.body.infoSeleksi.idUjian
       },
-      daftarUlang: {
-        buktiPembayaranDaftarUlang: req.body.daftarUlang.buktiPembayaranDaftarUlang,
-        statusPembayaranDaftarUlang: req.body.daftarUlang.statusPembayaranDaftarUlang
-      },
       tanggalRegistrasi:new Date().toLocaleString(),
     }
   )

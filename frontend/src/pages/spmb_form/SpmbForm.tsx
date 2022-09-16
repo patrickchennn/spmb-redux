@@ -114,20 +114,13 @@ export default function SpmbForm(){
           </Col>
 
           <Col>
-            <h5>DAFTAR ULANG</h5>
-            <i className="bi bi-4-circle fs-2"></i>
-            <Link to="/spmb-form/daftar-ulang">
-              <img src={daftarUlangBg} alt="daftar-ulang illustration" className='4'/>
-            </Link>
-          </Col>
-          <Col>
             <h5>LOGOUT</h5>
-            <i className="bi bi-5-circle fs-2"></i>
+            <i className="bi bi-4-circle fs-2"></i>
             <IoLogOutOutline onClick={()=>handleLogout()} style={{width:"150px",height:"150px",cursor:"pointer"}}/>
           </Col>
           <Col>
             <h5>DELETE ACCOUNT</h5>
-            <i className="bi bi-6-circle fs-2"></i>
+            <i className="bi bi-5-circle fs-2"></i>
             <AiOutlineDelete onClick={handleDeleteAccount} style={{width:"150px",height:"150px",cursor:"pointer"}}/>
           </Col>
         </Row>

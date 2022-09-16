@@ -26,9 +26,6 @@ const initialState = {
       prodi:"",
       idUjian: new Date().getTime()
     },
-    daftarUlang: {
-      buktiPembayaranDaftarUlang: "",
-    },
     tanggalRegistrasi:new Date().toLocaleString(),
   },
   isLoading: false,
@@ -82,8 +79,8 @@ const studentDataSlice = createSlice({
         state.isLoading = false
         state.isSuccess = true
         state.studentData = action.payload
-        console.log(action.payload)
-        state.message = "Successfully updating data for "
+        // console.log(action.payload)
+        state.message = "Data have been saved"
       })
       .addCase(updateStudentData.rejected, (state,action) => {
         state.isLoading = false

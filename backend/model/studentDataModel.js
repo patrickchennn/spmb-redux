@@ -74,15 +74,6 @@ const studentDataSchema = new mongoose.Schema(
       prodi:{type:String, default:""},
       idUjian: Number
     },
-    daftarUlang: {
-      buktiPembayaranDaftarUlang: {
-        name: String,
-        data: Buffer,
-        mimetype: String, 
-        default:"",
-        isAccepted: String,
-      },
-    },
     tanggalRegistrasi:{type: String, default: new Date().toLocaleString()},
   },
   { 

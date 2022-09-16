@@ -26,9 +26,6 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
       prodi:"",
       idUjian: new Date().getTime()
     },
-    daftarUlang: {
-      buktiPembayaranDaftarUlang: "",
-    },
     tanggalRegistrasi:new Date().toLocaleString(),
   }
 

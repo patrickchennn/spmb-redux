@@ -18,11 +18,6 @@ export default function LangkahPendaftaranNav(){
         <i className={`text-center fs-1 bi bi-3-circle`}></i>
         <span>Info Seleksi</span>
       </Link>
-
-      <Link to="/spmb-form/daftar-ulang" className="4 d-flex flex-column justify-content-center text-dark text-decoration-none">
-        <i className={`text-center fs-1 bi bi-4-circle`}></i> 
-        <span>Daftar Ulang</span>
-      </Link>
     </Nav>
   )
 }
