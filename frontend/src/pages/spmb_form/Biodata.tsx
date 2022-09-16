@@ -56,7 +56,7 @@ export default function Biodata(){
   useEffect(() => {
     console.log("USE EFFECT 2!")
     if(isError) toast.error(message)
-    if(isSuccess) toast.success(message)
+    if(isSuccess) toast.success(message,{autoClose: 1000})
     // fetchStudentData()
 
     

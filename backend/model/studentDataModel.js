@@ -21,7 +21,7 @@ const studentDataSchema = new mongoose.Schema(
       jenisKelamin: {type:String, default:""},
       kewarganegaraan: {type:String, default:""},
       tempatKotaLahir: {type:String, default:""},
-      tanggalLahir: {type:String, default:new Date().toLocaleDateString('en-CA')},
+      tanggalLahir: {type:String, default:""},
       alamatEmail: {type:String, default:""},
       noHp: {type:String,default:""},
     },
@@ -71,7 +71,8 @@ const studentDataSchema = new mongoose.Schema(
         isAccepted: String,
       },
       statusPenerimaanSeleksi:{type: String, default: 'diproses'},
-      prodi:{type:String, default:""}
+      prodi:{type:String, default:""},
+      idUjian: Number
     },
     daftarUlang: {
       buktiPembayaranDaftarUlang: {

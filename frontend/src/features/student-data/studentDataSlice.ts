@@ -7,7 +7,7 @@ const initialState = {
       kewarganegaraan: "",
       namaLengkap: "",
       jenisKelamin: "",
-      tanggalLahir: new Date().toLocaleDateString('en-CA'),
+      tanggalLahir: "",
       tempatKotaLahir: "",
       alamatEmail: "",
       noHp: "",
@@ -23,7 +23,8 @@ const initialState = {
       tanggalUjian: "",
       buktiPembayaranSeleksi: "",
       statusPenerimaanSeleksi:"diproses",
-      prodi:""
+      prodi:"",
+      idUjian: new Date().getTime()
     },
     daftarUlang: {
       buktiPembayaranDaftarUlang: "",
@@ -54,7 +55,6 @@ const studentDataSlice = createSlice({
       .addCase(createStudentDataDefault.fulfilled, (state,action) => {
         state.isLoading = false
         state.isSuccess = true
-        state.studentData = action.payload
       })
       .addCase(createStudentDataDefault.rejected, (state,action) => {
         state.isLoading = false
@@ -82,6 +82,8 @@ const studentDataSlice = createSlice({
         state.isLoading = false
         state.isSuccess = true
         state.studentData = action.payload
+        console.log(action.payload)
+        state.message = "Successfully updating data for "
       })
       .addCase(updateStudentData.rejected, (state,action) => {
         state.isLoading = false

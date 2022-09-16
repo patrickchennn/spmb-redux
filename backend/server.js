@@ -91,7 +91,7 @@ app.post(
     )
     res.status(200).json(updatedStudentData);
 
-    res.status(200).json("ye")
+    // res.status(200).json("ye")
   }
 )
 
@@ -101,22 +101,43 @@ app.post(
   protect,
   upload.single("buktiPembayaranSeleksi"),
   async (req,res) => {
-    console.log("req.body: ", req.body)
-    console.log(req.file)
-    const infoSeleksiFromClient = JSON.parse(req.body.infoSeleksi)
-    const { originalname,mimetype,buffer }  = req.file
     const final = {
       infoSeleksi:{
-        prodi: infoSeleksiFromClient.prodi,
-        tanggalUjian: infoSeleksiFromClient.tanggalUjian,
-        statusPembayaranSeleksi: infoSeleksiFromClient.statusPembayaranSeleksi,
-        statusPenerimaanSeleksi: infoSeleksiFromClient.statusPenerimaanSeleksi,
+        prodi: "",
+        tanggalUjian: "",
+        statusPenerimaanSeleksi: "",
         buktiPembayaranSeleksi: {
-          name: originalname,
-          mimetype,
-          data:buffer
+          name: "",
+          mimetype: "",
+          data:"",
+          isAccepted:""
         }
       }
+    }
+    const infoSeleksiFromClient = JSON.parse(req.body.infoSeleksi)
+    const isAccepted = req.body.buktiPembayaranSeleksi
+    // console.log("isAccepted? ",isAccepted)
+    // console.log("req.body: ", req.body)
+    // console.log(req.file)
+    if(req.file){
+      const { originalname,mimetype,buffer }  = req.file
+      final.infoSeleksi = {
+        ...final.infoSeleksi,
+        buktiPembayaranSeleksi:{
+          name: originalname,
+          mimetype,
+          data:buffer,
+          isAccepted
+        }
+      }
+      // console.log(final)
+    }
+
+    final.infoSeleksi = {
+      ...final.infoSeleksi,
+      prodi: infoSeleksiFromClient.prodi,
+      tanggalUjian: infoSeleksiFromClient.tanggalUjian,
+      statusPenerimaanSeleksi: infoSeleksiFromClient.statusPenerimaanSeleksi,
     }
 
     console.log("FINAL info seleksi data to be submitted",final)
@@ -124,12 +145,11 @@ app.post(
     const updatedStudentData = await studentDataModel.findByIdAndUpdate(
       req.user._id.toString(),
       final,
-      // [options.new=false] «Boolean» if true, return the modified document rather than the original
-      // {new:true}
     )
     res.status(200).json(updatedStudentData);
+
     // res.status(200).json("ye")
   }
 )
 
-app.listen(port,console.log(`\napp running on http://localhost:${port}`))
+app.listen(port,console.log(`\napp running on http://localhost:${port}`));

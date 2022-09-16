@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {register,reset as resetAuthState} from "../features/auth/authSlice";
 import { useAppDispatch,useAppSelector } from '../app/hooks';
-import {createStudentDataDefault} from "../features/student-data/studentDataSlice"
+import {createStudentDataDefault, reset as resetStudentDataState} from "../features/student-data/studentDataSlice"
 
 interface UserData {
   name: string,
@@ -22,7 +22,6 @@ export default function Register(){
 
   // select a redux state namely "auth"
   const {user,isLoading,isError,isSuccess,message} = useAppSelector(state => state.auth)
-
   // the confirmation password DOM element reference
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
 
@@ -38,10 +37,14 @@ export default function Register(){
     console.log("USE EFFECT!")
     if(isError) toast.error(message);
     
-    if(isSuccess || user) navigate('/spmb-form')
+    if(isSuccess || user){
+      toast.success(message)
+      navigate('/spmb-form')
+    }
 
     dispatch(resetAuthState())
-  }, [user,isLoading,isError,isSuccess,message])
+    dispatch(resetStudentDataState())
+  }, [user,isLoading,isError,isSuccess,message,navigate])
   
 
 
@@ -54,7 +57,8 @@ export default function Register(){
       
       await dispatch(register({name,email,password}))
       let {token} = JSON.parse(localStorage.getItem("user")!)
-      console.log(token);
+
+      // console.log(token);
       await dispatch(createStudentDataDefault({email,token}))
     }else{
       toast.error("Initial and confirm password are different!",{

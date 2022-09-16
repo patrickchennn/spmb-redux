@@ -7,7 +7,7 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
       namaLengkap: "",
       jenisKelamin: "",
       kewarganegaraan: "",
-      tanggalLahir: new Date().toLocaleDateString('en-CA'),
+      tanggalLahir: "",
       tempatKotaLahir: "",
       alamatEmail: email,
       noHp: "",
@@ -23,7 +23,8 @@ const createStudentDataDefault = async ({email, token}: {email:string, token:str
       tanggalUjian: "",
       buktiPembayaranSeleksi:"",
       statusPenerimaanSeleksi:"diproses",
-      prodi:""
+      prodi:"",
+      idUjian: new Date().getTime()
     },
     daftarUlang: {
       buktiPembayaranDaftarUlang: "",
