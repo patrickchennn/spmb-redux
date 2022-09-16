@@ -63,7 +63,8 @@ const setStudentData = asyncHandler(async (req,res) => {
         buktiPembayaranSeleksi:req.body.infoSeleksi.buktiPembayaranSeleksi,
         statusPembayaranSeleksi: req.body.infoSeleksi.statusPembayaranSeleksi,
         statusPenerimaanSeleksi: req.body.infoSeleksi.statusPenerimaanSeleksi,
-        prodi:req.body.infoSeleksi.prodi
+        prodi:req.body.infoSeleksi.prodi,
+        idUjian:req.body.infoSeleksi.idUjian
       },
       daftarUlang: {
         buktiPembayaranDaftarUlang: req.body.daftarUlang.buktiPembayaranDaftarUlang,

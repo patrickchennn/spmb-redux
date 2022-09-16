@@ -23,8 +23,7 @@ export default function SpmbForm(){
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const {user} = useAppSelector(state => state.auth)
-  const {isSuccess,isError,message} = useAppSelector(state => state.studentData)
+  const {user,isSuccess,isError,message} = useAppSelector(state => state.auth)
 
   useEffect(() => {
     console.log('USE EFFECT 1!')
@@ -39,12 +38,14 @@ export default function SpmbForm(){
       console.log("Token expired.")
       handleLogout(false)
     }
+    return () => {resetAuthState()}
   },[])
 
   useEffect(() => {
     console.log('USE EFFECT 2!')
     if(isSuccess) toast.success(message)
-  }, [message,isSuccess])
+    if(isError) toast.error(message)
+  }, [message,isSuccess,isError])
 
 
 

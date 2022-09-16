@@ -19,12 +19,12 @@ interface BuktiPembayaranSeleksi{
     name:string,
     url:string
   },
-  file: string|File
+  file: string|File,
+  isAccepted: string
 }
 interface InfoSeleksiData{
   prodi: string,
   tanggalUjian: string,
-  statusPembayaranSeleksi: string,
   statusPenerimaanSeleksi: string,
 }
 
@@ -36,19 +36,23 @@ export default function InfoSeleksi(){
   useAppSelector(state => console.log(state))
   const {isError,isLoading,isSuccess,message} = useAppSelector(state => state.studentData)
 
+
   const buktiPembayaranSeleksiRef = useRef<HTMLInputElement|null>(null)
-  const [fotoPeserta,setFotoPeserta] = useState("")
-  const [namaLengkap,setNamaLengkap] = useState("")
+  const [cardInfo,setCardInfo] = useState({
+    namaLengkap:"",
+    pasFoto:"",
+    id: "",
+  })
 
   const [infoSeleksiData,setInfoSeleksiData] = useState<InfoSeleksiData>({
     prodi:"",
     tanggalUjian:"",
-    statusPembayaranSeleksi:"",
     statusPenerimaanSeleksi:"",
   })
   const [buktiPembayaranSeleksi,setBuktiPembayaranSeleksi] = useState<BuktiPembayaranSeleksi>({
     previewImg:{name:"", url:""},
-    file:""
+    file:"",
+    isAccepted:"",
   })
 
 
@@ -60,19 +64,21 @@ export default function InfoSeleksi(){
     const fd = new FormData()
     fd.append("infoSeleksi",JSON.stringify(infoSeleksiData))
 
-      // if the user did upload any image
-      if(
-        buktiPembayaranSeleksi.file
-      ){
-        fd.append(
-          "buktiPembayaranSeleksi",
-          buktiPembayaranSeleksi.file,
-          (buktiPembayaranSeleksi.file as File).name
-        )
-      }else{
-        fd.append("buktiPembayaranSeleksi","")
-      }
+    // if the user did upload any image
+    if(
+      buktiPembayaranSeleksi.file
+    ){
+      fd.append("buktiPembayaranSeleksi",buktiPembayaranSeleksi.isAccepted)
+      fd.append(
+        "buktiPembayaranSeleksi",
+        buktiPembayaranSeleksi.file,
+        (buktiPembayaranSeleksi.file as File).name
+      )
+    }else{
+      fd.append("buktiPembayaranSeleksi","")
+    }
 
+    // console.table([...fd])
     const config = {
       headers:{
         "Content-Type": "multipart/form-data",
@@ -93,7 +99,8 @@ export default function InfoSeleksi(){
     buktiPembayaranSeleksiRef.current!.value = ""
     setBuktiPembayaranSeleksi({
       file:"",
-      previewImg:{name:"",url:""}
+      previewImg:{name:"",url:""},
+      isAccepted:""
     })
   }
 
@@ -107,7 +114,8 @@ export default function InfoSeleksi(){
         previewImg: {
           name:target.files![0].name,
           url: URL.createObjectURL(target.files![0])
-        }
+        },
+        isAccepted: "diproses"
       })
       return
     }
@@ -120,9 +128,12 @@ export default function InfoSeleksi(){
 
   async function fetchStudentData(){
     const response = await dispatch(getStudentData())
+    console.log("fetchStudentData(): ", response)
+
     const {infoSeleksi} = response.payload
     for(const key in infoSeleksi){
-      if(key==="buktiPembayaranSeleksi"){
+      if(key==="buktiPembayaranSeleksi" && infoSeleksi[key]){
+        console.log(infoSeleksi[key],typeof infoSeleksi[key])
         const {mimetype} = infoSeleksi[key]
         const imageArrayBuffer = infoSeleksi[key].data.data
         const toBuffer = new (Buffer as any).from(imageArrayBuffer)
@@ -133,7 +144,8 @@ export default function InfoSeleksi(){
           previewImg: {
             name:infoSeleksi[key].name,
             url:URL.createObjectURL(toBlob)
-          }
+          },
+          isAccepted: infoSeleksi[key].isAccepted
         })
         continue
       }
@@ -142,15 +154,19 @@ export default function InfoSeleksi(){
         ...prev,
         [key]: infoSeleksi[key]
       }))
-      const blob = toBlob(response.payload.berkasAdministrasi.pasFoto)
-      if(blob!==null){
-        setFotoPeserta(URL.createObjectURL(blob))
-      }
-      setNamaLengkap(response.payload.dataDiri.namaLengkap)
     }
-    console.log("fetchStudentData(): ", response)
+    const blob = toBlob(response.payload.berkasAdministrasi.pasFoto)
+    setCardInfo(prev => ({
+      ...prev,
+      namaLengkap: response.payload.dataDiri.namaLengkap,
+      pasFoto: blob!==null ? URL.createObjectURL(blob) : "",
+      id: response.payload.infoSeleksi.idUjian
+    }))
+    
   }
+
   function toBlob(file: any){
+    console.log(file)
     if(!file) return null
     const {mimetype} = file
     const imageArrayBuffer = file.data.data
@@ -158,6 +174,7 @@ export default function InfoSeleksi(){
     const blob = new Blob([toBuffer], {type:mimetype})
     return blob
   }
+
   useEffect(() => {
     console.log("USE EFFECT 1!")
     fetchStudentData()
@@ -170,7 +187,7 @@ export default function InfoSeleksi(){
   useEffect(() => {
     console.log("USE EFFECT 2!")
     if(isError) toast.error(message)
-    if(isSuccess) toast.success(message)
+    if(isSuccess) toast.success(message,{autoClose: 1000})
 
     return () => {
       console.log("CLEAN UP 2!");
@@ -247,7 +264,7 @@ export default function InfoSeleksi(){
 
                       <Button onClick={()=>handleChangeBuktiPembayaran("buktiPembayaranSeleksi")} className="me-3 mb-2 rounded-0 rounded-end" variant='danger'><BsTrash /></Button>
 
-                      <StatusAcceptance status={infoSeleksiData.statusPembayaranSeleksi}/>
+                      <StatusAcceptance status={buktiPembayaranSeleksi.isAccepted}/>
 
                       <Form.Control ref={buktiPembayaranSeleksiRef} onChange={handleChange} className="d-none" name="buktiPembayaranSeleksi" type="file" />
                       <Form.Text className="m-0 text-muted d-block">Rp.300000,00</Form.Text>
@@ -278,27 +295,28 @@ export default function InfoSeleksi(){
           </Col>
 
           <Col>
-            <Card className="border border-2 border-secondary rounded" style={{ width: '18rem' }}>
-              {
-                fotoPeserta ?  
-                  <Card.Img variant="top" src={fotoPeserta} alt="foto peserta ujian"/>
-                  :
-                  <h5 className="text-danger">Foto belum diupload</h5>
-              }
-              <Card.Body>
-                <Card.Title className="mb-1">{namaLengkap}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">Id: 123123123</Card.Subtitle>
-                <div className="mb-3">
-                  <div>
-                    Prodi: {infoSeleksiData.prodi}
-                  </div>
-                  <div>
-                    Tanggal ujian: {infoSeleksiData.tanggalUjian}
-                  </div>
-                </div>
-                <Button variant="primary"><AiOutlineDownload/> Cetak Kartu Ujian</Button>
-              </Card.Body>
-            </Card>
+            <h4>Kartu Ujian</h4>
+                <Card className="border border-2 border-secondary rounded" style={{ width: '18rem' }}>
+                  {
+                    cardInfo.pasFoto ?  
+                      <Card.Img variant="top" src={cardInfo.pasFoto} alt="foto peserta ujian"/>
+                      :
+                      <h5 className="text-danger">Foto belum diupload</h5>
+                  }
+                  <Card.Body>
+                    <Card.Title className="mb-1">{cardInfo.namaLengkap}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">Id: {cardInfo.id}</Card.Subtitle>
+                    <div className="mb-3">
+                      <div>
+                        Prodi: {infoSeleksiData.prodi}
+                      </div>
+                      <div>
+                        Tanggal ujian: {infoSeleksiData.tanggalUjian}
+                      </div>
+                    </div>
+                    <Button variant="primary"><AiOutlineDownload/> Cetak Kartu Ujian</Button>
+                  </Card.Body>
+                </Card>
           </Col>
         </Row>
       </Container>
