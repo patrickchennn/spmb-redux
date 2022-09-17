@@ -12,6 +12,7 @@ import { getStudentData, reset as resetStudentDataState } from '../../features/s
 import StatusAcceptance from "../../components/StatusAcceptance"
 import {toast} from 'react-toastify'
 import { Buffer } from 'buffer';
+import { useNavigate } from 'react-router-dom';
 
 
 interface BuktiPembayaranSeleksi{
@@ -33,6 +34,8 @@ interface InfoSeleksiData{
 
 export default function InfoSeleksi(){
   const dispatch = useAppDispatch()
+  const navigate = useNavigate();
+
   useAppSelector(state => console.log(state))
   const {isError,isLoading,isSuccess,message} = useAppSelector(state => state.studentData)
 
@@ -186,8 +189,13 @@ export default function InfoSeleksi(){
 
   useEffect(() => {
     console.log("USE EFFECT 2!")
-    if(isError) toast.error(message)
-    if(isSuccess) toast.success(message,{autoClose: 1000})
+    if(isError){
+      toast.error(message)
+      if(message==="jwt expired"){
+        navigate("/login")
+      }
+    }
+    if(isSuccess) toast.success(message,{autoClose: 2000})
 
     return () => {
       console.log("CLEAN UP 2!");
@@ -211,7 +219,7 @@ export default function InfoSeleksi(){
     )
   }
   return (
-    <div style={{padding:"0 0 5rem 0",backgroundColor:"rgb(251, 248, 241)"}}>
+    <div className="pb-5" style={{backgroundColor:"rgb(251, 248, 241)"}}>
       <Container>
         <Row>
           <LangkahPendaftaranNav />

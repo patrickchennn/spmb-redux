@@ -1,5 +1,4 @@
-import { Container,Row,Col,Form,Nav } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Container,Row,Col,Form } from 'react-bootstrap'
 import LangkahPendaftaranNav from '../../components/LangkahPendaftaranNav'
 import {useState,useEffect,useRef} from "react"
 import { useAppDispatch,useAppSelector } from '../../app/hooks'
@@ -7,9 +6,11 @@ import myIsAlpha from '../../features/myIsAlpha'
 import { toast } from 'react-toastify'
 import { updateStudentData,getStudentData,reset as resetStudentDataState } from '../../features/student-data/studentDataSlice'
 import SubmitNBackBtn from '../../components/SubmitNBackBtn'
+import { useNavigate } from 'react-router-dom';
 
 export default function Biodata(){
   const dispatch = useAppDispatch()
+  const navigate = useNavigate();
 
   const namaRef = useRef<HTMLInputElement | null>(null)
   const kewarganegaraanRef = useRef<HTMLInputElement | null>(null)
@@ -55,8 +56,13 @@ export default function Biodata(){
   
   useEffect(() => {
     console.log("USE EFFECT 2!")
-    if(isError) toast.error(message)
-    if(isSuccess) toast.success(message,{autoClose: 1000})
+    if(isError){
+      toast.error(message)
+      if(message==="jwt expired"){
+        navigate("/login")
+      }
+    }
+    if(isSuccess) toast.success(message,{autoClose: 2000})
     // fetchStudentData()
 
     
@@ -73,14 +79,17 @@ export default function Biodata(){
       toast.error("nama haruslah berupa sebuah alphabet(a-z atau A-Z)")
       console.log(namaRef.current)
       namaRef.current!.focus()
+      return
     }
     else if(!myIsAlpha(kewarganegaraan)){
       toast.error("nama negara haruslah berupa sebuah alphabet(a-z atau A-Z)")
       kewarganegaraanRef.current!.focus()
+      return
     }
     else if(!myIsAlpha(tempatKotaLahir)){
       toast.error("tempat kota lahir haruslah berupa sebuah alphabet(a-z atau A-Z)")
       tempatKotaLahirRef.current!.focus()
+      return
     }
     console.log("biodata to be submitted(pass validation): ",bioData)
     dispatch(updateStudentData(bioData))
@@ -106,8 +115,11 @@ export default function Biodata(){
     <>
       <style dangerouslySetInnerHTML={{
         __html: [
-          '.my-if-form-has-value:valid {',
-          '  background-color: whitesmoke',
+          '.my-if-form-has-value-and-valid:valid {',
+          '  background-color: #c8f3c4',
+          '}',
+          '.my-if-form-has-value-and-notvalid:valid {',
+          '  background-color: #f3c4c4',
           '}'
           ].join('\n')
         }}>
@@ -130,32 +142,33 @@ export default function Biodata(){
                 </h5>
                 <Form.Group controlId="namaLengkap" className="mb-3" >
                   <Form.Label>Nama Lengkap</Form.Label>
-                  <Form.Control required ref={namaRef} className="my-if-form-has-value" onChange={handleChange} value={namaLengkap} type="text" />
+                  <Form.Control required ref={namaRef} className={myIsAlpha(namaLengkap) ? "my-if-form-has-value-and-valid" : "my-if-form-has-value-and-notvalid"} onChange={handleChange} value={namaLengkap} type="text" />
                 </Form.Group>
 
                 <Form.Group controlId="jenisKelamin" className="mb-3" >
                   <Form.Label>Jenis Kelamin</Form.Label>
-                  <Form.Select required className="my-if-form-has-value" onChange={handleChange}>
-                    <option>{jenisKelamin}</option>
+                  <Form.Select required className="my-if-form-has-value-and-valid" onChange={handleChange}>
+                    <option selected disabled hidden value=" ">{jenisKelamin}</option>
                     <option value="pria">pria</option>
-                    <option value="perempuan">perempuan</option>
+                    <option value="perempuan">wanita</option>
+                    <option value="-">-</option>
                   </Form.Select>
                 </Form.Group>
 
                 <Form.Group controlId="kewarganegaraan"className="mb-3" >
                   <Form.Label>Kewarganegaraan</Form.Label>
-                  <Form.Control required ref={kewarganegaraanRef} className="my-if-form-has-value" onChange={handleChange} value={kewarganegaraan} type="text"/>
+                  <Form.Control required ref={kewarganegaraanRef} className={myIsAlpha(kewarganegaraan) ? "my-if-form-has-value-and-valid" : "my-if-form-has-value-and-notvalid"} onChange={handleChange} value={kewarganegaraan} type="text"/>
                 </Form.Group>
 
 
                 <Form.Group controlId="tempatKotaLahir" className="mb-3" >
                   <Form.Label>Tempat Lahir</Form.Label>
-                  <Form.Control required ref={tempatKotaLahirRef} className="my-if-form-has-value" onChange={handleChange} value={tempatKotaLahir} type="text" />
+                  <Form.Control required ref={tempatKotaLahirRef} className={myIsAlpha(tempatKotaLahir) ? "my-if-form-has-value-and-valid" : "my-if-form-has-value-and-notvalid"} onChange={handleChange} value={tempatKotaLahir} type="text" />
                 </Form.Group>
 
                 <Form.Group controlId="tanggalLahir" className="mb-3" >
                   <Form.Label>Tanggal Lahir</Form.Label>
-                  <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={tanggalLahir} type="date" />
+                  <Form.Control required className="my-if-form-has-value-and-valid" onChange={handleChange} value={tanggalLahir} type="date" />
                 </Form.Group>
 
                 <h5>
@@ -164,12 +177,12 @@ export default function Biodata(){
                 </h5>
                 <Form.Group controlId="alamatEmail" className="mb-3" >
                   <Form.Label>Alamat Email</Form.Label>
-                  <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={alamatEmail} type="email" />
+                  <Form.Control required className="my-if-form-has-value-and-valid" onChange={handleChange} value={alamatEmail} type="email" />
                 </Form.Group>
 
                 <Form.Group controlId="noHp" className="mb-3" >
                   <Form.Label>No Hp</Form.Label>
-                  <Form.Control required className="my-if-form-has-value" onChange={handleChange} value={noHp} type="number" />
+                  <Form.Control required className="my-if-form-has-value-and-valid" onChange={handleChange} value={noHp} type="number" />
                 </Form.Group>
 
                 <Row>
@@ -181,7 +194,7 @@ export default function Biodata(){
             </Col>
 
 
-            <Col className="d-flex justify-content-center">
+            {/* <Col className="d-flex justify-content-center">
               <div className="mt-5 mt-sm-0 p-4 border border-2 border-secondary rounded" style={{
                   boxShadow:"#d9d9d9 0px 0px 10px 0px",
                   height:"fit-content",
@@ -197,7 +210,7 @@ export default function Biodata(){
                   </Link>
                 </Nav>
               </div>
-            </Col>
+            </Col> */}
           </Row>
         </Container>
       </div>

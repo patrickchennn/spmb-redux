@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import { Buffer } from 'buffer';
 import SubmitNBackBtn from '../../components/SubmitNBackBtn'
 import StatusAcceptance from "../../components/StatusAcceptance"
+import { useNavigate } from 'react-router-dom';
 
 
 type BerkasAdmDatabaseVer = {
@@ -42,6 +43,8 @@ interface BerkasAdm {
 
 export default function BerkasAdministrasi(){
   const dispatch = useAppDispatch()
+  const navigate = useNavigate();
+
   const {isError,isLoading,isSuccess,message} = useAppSelector(state => state.studentData)
   const mainState = {
     previewImg:{
@@ -143,8 +146,13 @@ export default function BerkasAdministrasi(){
 
   useEffect(() => {
     console.log("USE EFFECT 2!")
-    if(isError) toast.error(message)
-    if(isSuccess) toast.success(message,{autoClose: 1000})
+    if(isError){
+      toast.error(message)
+      if(message==="jwt expired"){
+        navigate("/login")
+      }
+    }
+    if(isSuccess) toast.success(message,{autoClose: 2000})
 
     return () => {
       console.log("CLEAN UP 2!");
@@ -163,7 +171,7 @@ export default function BerkasAdministrasi(){
     )
   }
   return (
-    <div style={{backgroundColor:"rgb(251, 248, 241)"}}>
+    <div className="pb-5" style={{backgroundColor:"rgb(251, 248, 241)"}}>
       <Container>
         <Row>
           <Col>
@@ -289,18 +297,3 @@ export default function BerkasAdministrasi(){
     </div>
   )
 }
-
-/*
-                      <Badge pill bg="success">
-                        Diterima
-                      </Badge>
-                      <Badge pill bg="danger">
-                        Ditolak
-                      </Badge>
-
-
-
-
-
-                      jjjjjjj
-*/

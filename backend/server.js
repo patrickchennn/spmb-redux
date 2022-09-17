@@ -1,4 +1,5 @@
 const colors = require('colors')
+const path = require('path')
 const express = require("express")
 const bodyParser = require("body-parser")
 const {errorHandler} = require("./middleware/errorMiddleware.js")
@@ -7,7 +8,6 @@ const connectDB = require("./config/db.js")
 const multer = require("multer")
 const { protect } = require('./middleware/authMiddleware.js')
 const studentDataModel = require("./model/studentDataModel.js")
-const { json } = require('body-parser')
 
 connectDB()
 const app = express()
@@ -39,7 +39,6 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use("/api/student-data",require("./routes/studentDataRoutes.js"))
 app.use("/api/user",require("./routes/userRoutes.js"))
 
-app.use(errorHandler)
 
 
 // handle post request from /spmb-form/berkas-administrasi
@@ -152,4 +151,17 @@ app.post(
   }
 )
 
+// server frontend
+if(process.env.NODE_ENV==="production"){
+  app.use(express.static(path.join(__dirname,"../frontend/build")))
+  app.get('*', (req,res) => (
+    res.sendFile(
+      path.resolve(__dirname,'../','frontend','build','index.html')
+    )
+  ))
+}else{
+  app.get('/',(req,res) => res.send("in development mode"))
+}
+
+app.use(errorHandler)
 app.listen(port,console.log(`\napp running on http://localhost:${port}`));

@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/static/css/main.96356612.css",
+    "main.js": "/static/js/main.86251f1c.js",
+    "static/js/787.cda612ba.chunk.js": "/static/js/787.cda612ba.chunk.js",
+    "static/media/art-paint-lg.jpg": "/static/media/art-paint-lg.0972faab0642e8e442fd.jpg",
+    "static/media/info.png": "/static/media/info.1d1bcf42d20a618790ea.png",
+    "static/media/berkas.png": "/static/media/berkas.5c82a33bdb971312a7a3.png",
+    "static/media/bio-data.png": "/static/media/bio-data.f63aa0496602fb2da8e8.png",
+    "index.html": "/index.html",
+    "main.96356612.css.map": "/static/css/main.96356612.css.map",
+    "main.86251f1c.js.map": "/static/js/main.86251f1c.js.map",
+    "787.cda612ba.chunk.js.map": "/static/js/787.cda612ba.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.96356612.css",
+    "static/js/main.86251f1c.js"
+  ]
+}
